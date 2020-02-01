@@ -81,9 +81,7 @@ public class MTArchiveExtension {
     public static String getString(int hash) {
         if (extMap == null)
             initialize();
-        if (extMap.containsKey(hash))
-            return extMap.get(hash);
-        else
-            return String.format("0x%08x", hash);
+        return extMap.containsKey(hash) ?
+                extMap.get(hash) : String.format("0x%08x", hash);
     }
 }

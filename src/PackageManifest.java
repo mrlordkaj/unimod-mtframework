@@ -46,7 +46,7 @@ public final class PackageManifest extends PluginManifest {
 
     @Override
     public String getId() {
-        return "com.openitvn.unimod.codec.mtframework";
+        return "com.openitvn.unimod.mtframework";
     }
 
     @Override
