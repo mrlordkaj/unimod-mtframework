@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.format.mod.v21x;
+package com.openitvn.format.mod.v21;
 
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -38,7 +38,7 @@ import java.io.IOException;
  *
  * @author Thinh Pham
  */
-public class MTModReader21x extends MTModReader {
+public class MTModReader21 extends MTModReader {
     
     // structure
     private short numBones, numMeshes, numMaterials;
@@ -53,7 +53,7 @@ public class MTModReader21x extends MTModReader {
     private int unk2, unk3, unk4, unk5, unk6;
     private byte[] unk7;
     
-    public MTModReader21x(short ver, short rev) {
+    public MTModReader21(short ver, short rev) {
         super(ver, rev);
     }
     
@@ -156,10 +156,10 @@ public class MTModReader21x extends MTModReader {
         }
         
         // read meshes
-        MTModel21x[] models = new MTModel21x[numMeshes];
+        MTModel21[] models = new MTModel21[numMeshes];
         ds.position(meshBufferOffset);
         for (int i = 0; i < numMeshes; i++) {
-            MTModel21x mod = models[i] = new MTModel21x(ds);
+            MTModel21 mod = models[i] = new MTModel21(ds);
             // set material name
             String matName = matNames[mod.matIndex];
             Integer matHash = matHashes[mod.matIndex];
@@ -192,7 +192,7 @@ public class MTModReader21x extends MTModReader {
         }
         
         // read meshes vertex buffer
-        for (MTModel21x mod : models) {
+        for (MTModel21 mod : models) {
             ds.position(vertexBufferOffset);
             mod.readVertexBuffer(ds, translate, scale);
             ds.position(indexBufferOffset);

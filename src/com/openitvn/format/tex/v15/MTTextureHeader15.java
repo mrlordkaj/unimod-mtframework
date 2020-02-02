@@ -106,7 +106,7 @@ public class MTTextureHeader15 extends MTTextureHeader {
     
     @Override
     protected final IPixelFormat getFormat() throws UnsupportedOperationException {
-        switch(formatRE6) {
+        switch (formatRE6) {
             case 0x07:
             case 0x08:
             case 0x09:
@@ -144,7 +144,7 @@ public class MTTextureHeader15 extends MTTextureHeader {
             //    return 3Dc/ATI2;
             
             default:
-                throw new UnsupportedOperationException(String.format("Pixel Format %1$02X is not supported yet.", formatRE6));
+                throw new UnsupportedOperationException(String.format("Unsupported Format %02X.", formatRE6));
         }
     }
     

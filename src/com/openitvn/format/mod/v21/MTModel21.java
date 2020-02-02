@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.format.mod.v21x;
+package com.openitvn.format.mod.v21;
 
 import com.badlogic.gdx.math.Vector3;
 import com.openitvn.unicore.data.DataStream;
@@ -26,7 +26,7 @@ import com.openitvn.unicore.data.DataFormat;
  *
  * @author Thinh Pham
  */
-public class MTModel21x extends MTModel {
+public class MTModel21 extends MTModel {
     
     private static final int STRUCT_SIZE = 48;
     
@@ -69,7 +69,7 @@ public class MTModel21x extends MTModel {
     private final short maxIndex;
     private final int hash;
     
-    MTModel21x(DataStream ds) {
+    MTModel21(DataStream ds) {
         // header
         flags = ds.getShort();
         vertexCount = ds.getShort();

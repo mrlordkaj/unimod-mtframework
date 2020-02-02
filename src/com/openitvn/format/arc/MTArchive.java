@@ -48,25 +48,23 @@ public class MTArchive extends IArchive<MTArchiveEntry> {
     @Override
     protected void parse(File in) throws IOException {
         try (FileStream fs = new FileStream(in)) {
-            // check fourCC
             if (fs.getInt() == ARC_MAGIC) {
+                // read header
+                version = fs.getShort();
+                int numEntries = fs.getShort();
+                // parse entries
+                for (int i = 0; i < numEntries; i++) {
+                    String name = fs.readFixedString(64);
+                    int ext = fs.getInt();
+                    int packed = fs.getInt();
+                    int sizeFlag = fs.getInt();
+                    int size = sizeFlag & 0x00ffffff;
+                    byte flag = (byte)(sizeFlag >> 24);
+                    int offset = fs.getInt();
+                    entries.add(new MTArchiveEntry(this, name, ext, packed, size, flag, offset));
+                }
+            } else {
                 throw new IOException("Invalid MTF Archive format");
-            }
-            // read header
-            version = fs.getShort();
-            int numEntries = fs.getShort();
-            // parse entries
-            for (int i = 0; i < numEntries; i++) {
-                byte[] nameData = new byte[64];
-                fs.get(nameData);
-                String name = new String(nameData).trim();
-                int ext = fs.getInt();
-                int packed = fs.getInt();
-                int sizeFlag = fs.getInt();
-                int size = sizeFlag & 0x00ffffff;
-                byte flag = (byte)(sizeFlag >> 24);
-                int offset = fs.getInt();
-                entries.add(new MTArchiveEntry(this, name, ext, packed, size, flag, offset));
             }
         }
     }
@@ -77,7 +75,8 @@ public class MTArchive extends IArchive<MTArchiveEntry> {
                 FileOutputStream fos = new FileOutputStream(out)) {
             // preserve header size
             short numEntries = (short) entries.size();
-            ByteBuffer bb = ByteBuffer.allocate(HEADER_SIZE + ENTRY_SIZE * numEntries).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer bb = ByteBuffer.allocate(HEADER_SIZE + ENTRY_SIZE * numEntries);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
             bb.putInt(ARC_MAGIC);
             bb.putShort(version);
             bb.putShort(numEntries);
@@ -90,11 +89,8 @@ public class MTArchive extends IArchive<MTArchiveEntry> {
                 // begin write entry content
                 if (e.getPacked() >= 0) {
                     // if the entry has not been replaced, just copy packed data from source archive
-//                    byte[] data = new byte[(int)e.getPacked()];
                     fis.getChannel().position(e.getOffset());
                     DataStream.copy(fis, fos, e.getPacked());
-//                    fis.read(data);
-//                    fos.write(data);
                 } else {
                     // else, perform packing and write to archive
                     e.pack(fos, newOffset);
@@ -104,10 +100,8 @@ public class MTArchive extends IArchive<MTArchiveEntry> {
                 fos.getChannel().position(HEADER_SIZE + ENTRY_SIZE * i);
                 bb = ByteBuffer.allocate(ENTRY_SIZE).order(ByteOrder.LITTLE_ENDIAN);
                 String entryName = e.getPathWithoutExt();
-                byte[] entryNameBytes = new byte[64];
-                for (int k = 0; k < entryName.length(); k++)
-                    entryNameBytes[k] = (byte) entryName.charAt(k);
-                bb.put(entryNameBytes);
+                bb.put(entryName.getBytes());
+                bb.position(bb.position() + 64 - entryName.length()); // fill 64 bytes
                 bb.putInt(e.getHash());
                 bb.putInt((int)e.getPacked());
                 int sizeAndFlag = e.getFlags() << 24 | (int)e.getSize();

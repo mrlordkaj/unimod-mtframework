@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.format.mod.v15x;
+package com.openitvn.format.mod.v15;
 
 import com.badlogic.gdx.math.Vector3;
 import com.openitvn.unicore.data.DataStream;
@@ -33,7 +33,7 @@ import com.openitvn.format.tex.MTTexture;
  *
  * @author Thinh Pham
  */
-public class MTModReader15x extends MTModReader {
+public class MTModReader15 extends MTModReader {
     
     // structure
     private short numBones, numMeshes, numMaterials;
@@ -49,7 +49,7 @@ public class MTModReader15x extends MTModReader {
     private int reserved3;
     private byte[] unk12;
     
-    public MTModReader15x(short ver, short rev) {
+    public MTModReader15(short ver, short rev) {
         super(ver, rev);
     }
     
@@ -150,17 +150,17 @@ public class MTModReader15x extends MTModReader {
         }
         // read material buffers
         for (int i = 0; i < numMaterials; i++) {
-            MTMaterial15x mat = new MTMaterial15x(ds, textures);
+            MTMaterial15 mat = new MTMaterial15(ds, textures);
             materials.add(mat);
             mat.setName(String.format("material_%1$03d", i));
         }
         
         // read mesh headers
         ds.position(meshBufferOffset);
-        MTModel15x[] models = new MTModel15x[numMeshes];
+        MTModel15[] models = new MTModel15[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
-            MTModel15x mod = models[i] = new MTModel15x(ds);
-            MTMaterial15x mat = (MTMaterial15x) materials.get(mod.materialIndex); 
+            MTModel15 mod = models[i] = new MTModel15(ds);
+            MTMaterial15 mat = (MTMaterial15) materials.get(mod.materialIndex); 
             mod.setName(String.format("part_%1$03d", i));
             if (mat.isRenderable()) {
                 IGeometry geo = new IGeometry();
@@ -180,7 +180,7 @@ public class MTModReader15x extends MTModReader {
         }
         
         // read meshes vertex buffer
-        for (MTModel15x mod : models) {
+        for (MTModel15 mod : models) {
             ds.position(vertexBufferOffset);
             mod.readVertexBuffer(ds, box.min, scale);
             ds.position(indexBufferOffset);

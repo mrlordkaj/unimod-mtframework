@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.format.mod.v15x;
+package com.openitvn.format.mod.v15;
 
 import com.badlogic.gdx.math.Vector3;
 import com.openitvn.unicore.data.DataStream;
@@ -28,7 +28,7 @@ import com.openitvn.unicore.world.WorldHelper;
  *
  * @author Thinh Pham
  */
-class MTModel15x extends MTModel {
+class MTModel15 extends MTModel {
     
     private static final int STRUCT_SIZE = 52;
     
@@ -59,7 +59,7 @@ class MTModel15x extends MTModel {
     private final int maxIndex; // ushort
     private final short unk11;
     
-    MTModel15x(DataStream ds) {
+    MTModel15(DataStream ds) {
         // header
         groupIndex = ds.getShort();
         materialIndex = ds.getShort();

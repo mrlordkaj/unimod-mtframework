@@ -25,7 +25,7 @@ import java.nio.ByteOrder;
 
 /**
  *
- * @author Thinh Pham <mrlordkaj@gmail.com>
+ * @author Thinh Pham
  */
 public class MTTextureHeader11 extends MTTextureHeader {
     private static final int STRUCT_SIZE = 34;

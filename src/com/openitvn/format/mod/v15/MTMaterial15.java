@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.format.mod.v15x;
+package com.openitvn.format.mod.v15;
 
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.world.resource.ITexture;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  *
  * @author Thinh Pham
  */
-public class MTMaterial15x extends IMaterial {
+public class MTMaterial15 extends IMaterial {
     
 //    private static final int STRUCT_SIZE = 160;
     
@@ -105,7 +105,7 @@ public class MTMaterial15x extends IMaterial {
     private final float unk47;
     private final float unk48;
     
-    public MTMaterial15x(DataStream ds, ArrayList<ITexture> textures) {
+    public MTMaterial15(DataStream ds, ArrayList<ITexture> textures) {
         flags1 = ds.getShort();
         unk1 = ds.getUByte();
         unk2 = ds.getUByte();

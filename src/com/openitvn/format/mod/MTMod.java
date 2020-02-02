@@ -19,8 +19,8 @@ package com.openitvn.format.mod;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.world.IWorldUnit;
 import com.openitvn.unicore.world.IWorld;
-import com.openitvn.format.mod.v15x.MTModReader15x;
-import com.openitvn.format.mod.v21x.MTModReader21x;
+import com.openitvn.format.mod.v15.MTModReader15;
+import com.openitvn.format.mod.v21.MTModReader21;
 import com.openitvn.format.mrl.MTMaterialHash;
 import com.openitvn.unicore.world.ILayer;
 import com.openitvn.util.StringHelper;
@@ -51,12 +51,12 @@ public class MTMod extends IWorld {
             MTModReader reader;
             switch (version) {
                 case 156:
-                    reader = new MTModReader15x(version, revision);
+                    reader = new MTModReader15(version, revision);
                     break;
 
                 case 210:
                 case 211:
-                    reader = new MTModReader21x(version, revision);
+                    reader = new MTModReader21(version, revision);
                     break;
 
                 default:
