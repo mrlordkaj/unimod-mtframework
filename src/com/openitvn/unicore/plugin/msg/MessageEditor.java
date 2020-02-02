@@ -335,7 +335,7 @@ public class MessageEditor extends FileViewer {
         mainToolbar.setFloatable(false);
         mainToolbar.setRollover(true);
 
-        btnOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_open.png"))); // NOI18N
+        btnOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/open.png"))); // NOI18N
         btnOpen.setToolTipText("Open");
         btnOpen.setFocusable(false);
         btnOpen.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -344,7 +344,7 @@ public class MessageEditor extends FileViewer {
         btnOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         mainToolbar.add(btnOpen);
 
-        btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_close.png"))); // NOI18N
+        btnClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/close.png"))); // NOI18N
         btnClose.setToolTipText("Close");
         btnClose.setEnabled(false);
         btnClose.setFocusable(false);
@@ -359,7 +359,7 @@ public class MessageEditor extends FileViewer {
         });
         mainToolbar.add(btnClose);
 
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_save.png"))); // NOI18N
+        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/save.png"))); // NOI18N
         btnSave.setToolTipText("Save");
         btnSave.setEnabled(false);
         btnSave.setFocusable(false);
@@ -374,7 +374,7 @@ public class MessageEditor extends FileViewer {
         });
         mainToolbar.add(btnSave);
 
-        btnExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_export.png"))); // NOI18N
+        btnExport.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/export.png"))); // NOI18N
         btnExport.setToolTipText("Export");
         btnExport.setEnabled(false);
         btnExport.setFocusable(false);
@@ -387,7 +387,7 @@ public class MessageEditor extends FileViewer {
         jSeparator1.setSeparatorSize(new java.awt.Dimension(10, 30));
         mainToolbar.add(jSeparator1);
 
-        btnSnapshot.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_snapshot.png"))); // NOI18N
+        btnSnapshot.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/snapshot.png"))); // NOI18N
         btnSnapshot.setToolTipText("Take Snapshot");
         btnSnapshot.setEnabled(false);
         btnSnapshot.setFocusable(false);
@@ -402,7 +402,7 @@ public class MessageEditor extends FileViewer {
         });
         mainToolbar.add(btnSnapshot);
 
-        btnCharmap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_charmap.png"))); // NOI18N
+        btnCharmap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/charmap.png"))); // NOI18N
         btnCharmap.setToolTipText("Charmap Editor");
         btnCharmap.setFocusable(false);
         btnCharmap.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -416,7 +416,7 @@ public class MessageEditor extends FileViewer {
         });
         mainToolbar.add(btnCharmap);
 
-        btnHidden.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_hidden.png"))); // NOI18N
+        btnHidden.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/hidden.png"))); // NOI18N
         btnHidden.setToolTipText("Show/Hide Hidden Lines");
         btnHidden.setFocusable(false);
         btnHidden.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -445,7 +445,7 @@ public class MessageEditor extends FileViewer {
         jSeparator3.setSeparatorSize(new java.awt.Dimension(10, 30));
         mainToolbar.add(jSeparator3);
 
-        btnAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/icon24/toolbar_about.png"))); // NOI18N
+        btnAbout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/toolbar/about.png"))); // NOI18N
         btnAbout.setToolTipText("About Message Viewer");
         btnAbout.setFocusable(false);
         btnAbout.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);

@@ -6,7 +6,6 @@
             <name>unimod-mtframework</name>
             <source-roots>
                 <root id="src.dir"/>
-                <root id="res.dir" name="Resource Packages"/>
             </source-roots>
             <test-roots/>
         </data>
