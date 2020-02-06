@@ -36,7 +36,7 @@ public class MTGroup extends INode {
     public final float unk8;
     
     public MTGroup(DataStream ds) {
-        //read data
+        // read data
         index = ds.getInt();
         unk2 = ds.getFloat();
         unk3 = ds.getFloat();
@@ -45,7 +45,7 @@ public class MTGroup extends INode {
         unk6 = ds.getFloat();
         unk7 = ds.getFloat();
         unk8 = ds.getFloat();
-        //update properties
-        name = String.format("mesh_%1$03d", index);
+        // update properties
+        name = String.format("Group_%1$03d", index);
     }
 }

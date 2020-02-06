@@ -46,16 +46,19 @@ public final class PackageManifest extends PluginManifest {
 
     @Override
     public String getId() {
-        return "com.openitvn.unimod.mtframework";
+        // TODO: define package identity here
+        return "com.unimod.mtframework";
     }
 
     @Override
     public String getName() {
-        return "MultiTarget Pack";
+        // TODO: define package name here
+        return "Capcom MTF Pack";
     }
 
     @Override
     public String getVersion() {
+        // TODO: define package version here
         return "1.0.0";
     }
 }

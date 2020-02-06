@@ -28,6 +28,8 @@ import com.openitvn.format.mod.MTGroup;
 import com.openitvn.format.mod.MTMod;
 import com.openitvn.format.mod.MTModReader;
 import com.openitvn.format.tex.MTTexture;
+import com.openitvn.unicore.world.resource.IModel;
+import java.util.HashMap;
 
 /**
  *
@@ -55,7 +57,7 @@ public class MTModReader15 extends MTModReader {
     
     @Override
     protected void decode(MTMod world, DataStream ds) {
-        world.maxBones = 32; // v156 use boneMaps, each map have 32 bones
+        world.maxBones = 32; // each map have 32 bones
         numBones = ds.getShort();
         numMeshes = ds.getShort();
         numMaterials = ds.getShort();
@@ -135,11 +137,7 @@ public class MTModReader15 extends MTModReader {
         
         // read groups
         ds.position(groupBufferOffset);
-        MTGroup[] groups = new MTGroup[numGroups];
-        for (int i = 0; i < numGroups; i++) {
-            MTGroup gr = groups[i] = new MTGroup(ds);
-            gr.attach(world);
-        }
+        readGroup(world, ds, numGroups);
         
         // build textures by request external tex files
         ds.position(textureBufferOffset);
@@ -157,34 +155,36 @@ public class MTModReader15 extends MTModReader {
         
         // read mesh headers
         ds.position(meshBufferOffset);
-        MTModel15[] models = new MTModel15[numMeshes];
+        HashMap<String, IModel> modelMap = new HashMap();
+        MTMesh15[] meshes = new MTMesh15[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
-            MTModel15 mod = models[i] = new MTModel15(ds);
-            MTMaterial15 mat = (MTMaterial15) materials.get(mod.materialIndex); 
-            mod.setName(String.format("part_%1$03d", i));
-            if (mat.isRenderable()) {
-                IGeometry geo = new IGeometry();
-                geo.setName(mod.getName());
-                int lod = mod.getLevelOfDetail();
-                if (lod < 255)
-                    geo.setLayerIndex(lod);
+            MTMesh15 mesh = meshes[i] = new MTMesh15(ds);
+            short lod = mesh.levelOfDetail;
+            String modName = String.format("Part_%03d_LOD_%03d", mesh.groupIndex, lod);
+            IModel mod = modelMap.get(modName);
+            if (mod == null) {
+                // add new model when not found
+                mod = new IModel(modName);
+                world.registerModel(mod, lod);
+                modelMap.put(modName, mod);
+                // add geometry for instance
+                IGeometry geo = new IGeometry(modName);
+                geo.setLayerIndex(lod < 255 ? lod : -1);
                 geo.skeleton = skel;
-                for (MTGroup gr : groups) {
-                    if (mod.groupIndex == gr.index) {
-                        geo.attach(gr);
-                        break;
-                    }
-                }
+                geo.attach(getGroupByIndex(mesh.groupIndex));
             }
-            world.addModel(mod);
+            MTMaterial15 mat = (MTMaterial15) materials.get(mesh.materialIndex);
+            if (mat.isRenderable()) {
+                mod.meshes.add(mesh);
+            }
         }
         
         // read meshes vertex buffer
-        for (MTModel15 mod : models) {
+        for (MTMesh15 mesh : meshes) {
             ds.position(vertexBufferOffset);
-            mod.readVertexBuffer(ds, box.min, scale);
+            mesh.readVertexBuffer(ds, box.min, scale);
             ds.position(indexBufferOffset);
-            mod.readIndexBuffer(ds);
+            mesh.readIndexBuffer(ds);
         }
     }
 }

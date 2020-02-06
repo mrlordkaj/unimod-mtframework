@@ -32,6 +32,7 @@ public abstract class MTModReader {
     protected final ArrayList<ITexture> textures = new ArrayList();
     
     protected final short version, revision;
+    protected MTGroup[] groups;
     
     public MTModReader(short ver, short rev) {
         this.version = ver;
@@ -39,4 +40,20 @@ public abstract class MTModReader {
     }
     
     protected abstract void decode(MTMod world, DataStream ds) throws UnsupportedOperationException;
+    
+    protected void readGroup(MTMod world, DataStream ds, int numGroups) {
+        groups = new MTGroup[numGroups];
+        for (int i = 0; i < numGroups; i++) {
+            MTGroup group = groups[i] = new MTGroup(ds);
+            group.attach(world);
+        }
+    }
+    
+    protected MTGroup getGroupByIndex(int index) {
+        for (MTGroup group : groups) {
+            if (index == group.index)
+                return group;
+        }
+        return null;
+    }
 }

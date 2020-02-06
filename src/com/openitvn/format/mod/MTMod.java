@@ -25,6 +25,7 @@ import com.openitvn.format.mrl.MTMaterialHash;
 import com.openitvn.unicore.world.ILayer;
 import com.openitvn.util.StringHelper;
 import com.openitvn.unicore.world.IWorldCoord;
+import com.openitvn.unicore.world.resource.IModel;
 
 /**
  *
@@ -60,20 +61,19 @@ public class MTMod extends IWorld {
                     break;
 
                 default:
-                    throw new UnsupportedOperationException("Unsupported mod version " + version);
+                    throw new UnsupportedOperationException("Unsupported MTF Model version " + version);
             }
             reader.decode(this, ds);
             resource.register(reader.textures);
             resource.register(reader.materials);
-            // cleanup cache stuff
+            // clean cache stuff
             MTMaterialHash.cleanup();
         } else {
-            throw new UnsupportedOperationException("Invalid mod format");
+            throw new UnsupportedOperationException("Invalid MTF Model format");
         }
     }
     
-    public void addModel(MTModel model) {
-        short lod = model.getLevelOfDetail();
+    public void registerModel(IModel model, short lod) {
         if (lod != 255) {
             ILayer layer = null;
             for (ILayer l : layers) {
@@ -84,10 +84,9 @@ public class MTMod extends IWorld {
             }
             if (layer == null) {
                 boolean active = lod == 1;
-                layer = new ILayer(lod, "Layer "+lod, active);
+                layer = new ILayer(lod, "LOD "+lod, active);
                 layers.add(layer);
             }
-            model.layerIndex = lod;
         }
         resource.register(model);
     }
