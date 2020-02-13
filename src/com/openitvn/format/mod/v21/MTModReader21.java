@@ -174,7 +174,7 @@ public class MTModReader21 extends MTModReader {
                 modelMap.put(modName, mod);
                 // add geometry for instance
                 IGeometry geo = new IGeometry(modName);
-                geo.setLayerIndex(lod < 255 ? lod : -1);
+                geo.layerIndex = (lod < 255 ? lod : -1);
                 geo.skeleton = skel;
                 geo.attach(getGroupByIndex(mesh.groupIndex));
             }
