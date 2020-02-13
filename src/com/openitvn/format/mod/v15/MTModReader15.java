@@ -24,7 +24,6 @@ import com.openitvn.format.mod.DependencyHelper;
 import com.openitvn.format.mod.MTBoundingBox;
 import com.openitvn.format.mod.MTBoundingSphere;
 import com.openitvn.format.mod.MTBone;
-import com.openitvn.format.mod.MTGroup;
 import com.openitvn.format.mod.MTMod;
 import com.openitvn.format.mod.MTModReader;
 import com.openitvn.format.tex.MTTexture;

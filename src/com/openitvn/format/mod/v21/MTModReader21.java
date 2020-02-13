@@ -45,7 +45,7 @@ public class MTModReader21 extends MTModReader {
     private short numBones, numMeshes, numMaterials;
     private int numVertices, numIndices, numEdges;
     private int vertexBufferSize;
-    private int pad1;
+    private int unk1;
     private int numGroups;
     private int boneBufferOffset, groupBufferOffset, materialBufferOffset, meshBufferOffset, vertexBufferOffset, indexBufferOffset;
     private int fileSize; // excluded fourCC
@@ -71,7 +71,7 @@ public class MTModReader21 extends MTModReader {
         numIndices = ds.getInt();
         numEdges = ds.getInt();
         vertexBufferSize = ds.getInt();
-        pad1 = ds.getInt();
+        unk1 = ds.getInt();
         numGroups = ds.getInt();
         boneBufferOffset = ds.getInt();
         groupBufferOffset = ds.getInt();

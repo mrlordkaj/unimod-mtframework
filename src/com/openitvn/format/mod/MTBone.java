@@ -37,7 +37,7 @@ public class MTBone extends IBone {
     public final float x, y, z;         // relative to the parent bone
     
     public MTBone(int index, DataStream ds) {
-        //read data
+        // read data
         animMapIndex = ds.getUByte();
         parentId = ds.getUByte();
         mirrorIndex = ds.getUByte();
@@ -47,12 +47,12 @@ public class MTBone extends IBone {
         x = ds.getFloat();
         y = ds.getFloat();
         z = ds.getFloat();
-        //update properties
+        // update properties
         name = String.format("bone_%1$03d", index);
     }
     
     public void readLocalTransform(DataStream ds) {
-        float[] m = getLocalTransform().val;
+        float[] m = transform.localMatrix.val;
         for (int i = 0; i < m.length; i++)
             m[i] = ds.getFloat();
     }

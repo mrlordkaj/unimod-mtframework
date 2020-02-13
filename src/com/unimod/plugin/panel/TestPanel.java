@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.unicore.plugin.panel;
+package com.unimod.plugin.panel;
 
 import com.openitvn.unicore.plugin.PanelViewer;
 

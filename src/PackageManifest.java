@@ -24,7 +24,7 @@ import com.openitvn.unicore.plugin.FileType;
 import com.openitvn.unicore.plugin.PanelLocation;
 import com.openitvn.unicore.plugin.PluginManifest;
 import com.openitvn.unicore.plugin.msg.MessageEditor;
-import com.openitvn.unicore.plugin.panel.TestPanel;
+import com.unimod.plugin.panel.TestPanel;
 
 /**
  *
