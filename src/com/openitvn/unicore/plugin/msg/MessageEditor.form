@@ -255,7 +255,7 @@
             </Property>
           </Properties>
         </Component>
-        <Component class="com.openitvn.control.KTextField" name="txtSearch">
+        <Component class="com.openitvn.control.JuniTextField" name="txtSearch">
           <Properties>
             <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
               <Dimension value="[200, 26]"/>

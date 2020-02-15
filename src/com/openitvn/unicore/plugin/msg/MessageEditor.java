@@ -16,7 +16,7 @@
  */
 package com.openitvn.unicore.plugin.msg;
 
-import com.openitvn.control.table.BooleanCellRenderer;
+import com.openitvn.control.JuniBooleanCellRenderer;
 import com.openitvn.unicore.Unicore;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.data.FileStream;
@@ -143,7 +143,7 @@ public class MessageEditor extends FileViewer {
         };
         messageTable.setDefaultRenderer(Integer.class, rowRenderer);
         messageTable.setDefaultRenderer(String.class, rowRenderer);
-        messageTable.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+        messageTable.setDefaultRenderer(Boolean.class, new JuniBooleanCellRenderer());
         
         //event when message table change selection
         messageTable.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
@@ -256,7 +256,7 @@ public class MessageEditor extends FileViewer {
         btnCharmap = new javax.swing.JButton();
         btnHidden = new javax.swing.JToggleButton();
         jSeparator7 = new javax.swing.JToolBar.Separator();
-        txtSearch = new com.openitvn.control.KTextField();
+        txtSearch = new com.openitvn.control.JuniTextField();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         btnAbout = new javax.swing.JButton();
         mainSplitter = new javax.swing.JSplitPane();
@@ -670,6 +670,6 @@ public class MessageEditor extends FileViewer {
     private javax.swing.JMenuItem mnuUnhideMessage;
     private javax.swing.JSplitPane translateSplitter;
     private javax.swing.JTextField txtFile;
-    private com.openitvn.control.KTextField txtSearch;
+    private com.openitvn.control.JuniTextField txtSearch;
     // End of variables declaration//GEN-END:variables
 }
