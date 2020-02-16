@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.unicore.plugin.msg;
+package com.openitvn.format.msg;
 
 import com.openitvn.unicore.Unicore;
 import java.io.BufferedReader;
@@ -32,11 +32,12 @@ import java.util.regex.Pattern;
  * @author Thinh Pham
  */
 public class MTCharmap {
-    public static final String INTERNAL_CHARMAP = "/com/openitvn/unicore/plugin/msg/charmap.tbl";
-    public static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/MessageViewer/charmap.tbl";
     
-    private int undefinedCode = 0x00440016; //use character "?" for undefined chars
-    private int endCode = 0x04010000; //termine sentencies
+    public static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.tbl";
+    public static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.tbl";
+    
+    private int undefCode = 0x00440016; // use character "?" for undefined chars
+    private int endCode = 0x04010000; // termine sentencies
     
     private static MTCharmap instance;
     public static MTCharmap getInstance() {
@@ -54,11 +55,10 @@ public class MTCharmap {
     public final void loadCharmapFile() {
         charMap.clear();
         Pattern pattern = Pattern.compile("^\\[0[xX]([0-9a-fA-F]{8})\\]=(.*)$");
-        try {
-            File file = new File(EXTERNAL_CHARMAP);
-            InputStream is = file.exists() ? new FileInputStream(file) : getClass().getResourceAsStream(INTERNAL_CHARMAP);
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader reader = new BufferedReader(isr);
+        File file = new File(EXTERNAL_CHARMAP);
+        try (InputStream is = file.exists() ? new FileInputStream(file) : getClass().getResourceAsStream(INTERNAL_CHARMAP);
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader reader = new BufferedReader(isr)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
@@ -66,7 +66,7 @@ public class MTCharmap {
                     int charCode = Integer.parseInt(matcher.group(1), 16);
                     String decode = matcher.group(2);
                     if ("?".equals(decode))
-                        undefinedCode = charCode;
+                        undefCode = charCode;
                     if ("<end>".equals(decode))
                         endCode = charCode;
                     charMap.add(new MTChar(charCode, decode));
@@ -77,19 +77,25 @@ public class MTCharmap {
         }
     }
     
-    public int getEndCode() {
-        return endCode;
+    public static int getEndCode() {
+        return getInstance().endCode;
     }
     
-    public int encode(String character) {
-        for (MTChar charEntry : charMap)
-            if(charEntry.decode().equals(character)) return charEntry.charCode();
-        return undefinedCode;
+    public static int encode(String character) {
+        MTCharmap map = getInstance();
+        for (MTChar charEntry : map.charMap) {
+            if (charEntry.decode.equals(character))
+                return charEntry.charCode;
+        }
+        return map.undefCode;
     }
     
-    public String decode(int charCode) {
-        for (MTChar charEntry : charMap)
-            if(charEntry.charCode() == charCode) return charEntry.decode();
+    public static String decode(int charCode) {
+        MTCharmap map = getInstance();
+        for (MTChar charEntry : map.charMap) {
+            if (charEntry.charCode == charCode)
+                return charEntry.decode;
+        }
         return null;
     }
 }

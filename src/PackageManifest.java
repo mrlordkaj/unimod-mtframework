@@ -19,11 +19,11 @@
 import com.openitvn.format.arc.MTArchive;
 import com.openitvn.format.mod.MTMod;
 import com.openitvn.format.mrl.MTMaterialLibrary;
+import com.openitvn.format.msg.MTMessage;
 import com.openitvn.format.tex.MTTexturePack;
 import com.openitvn.unicore.plugin.FileType;
 import com.openitvn.unicore.plugin.PanelLocation;
 import com.openitvn.unicore.plugin.PluginManifest;
-import com.openitvn.unicore.plugin.msg.MessageEditor;
 import com.unimod.plugin.panel.TestPanel;
 
 /**
@@ -37,7 +37,8 @@ public final class PackageManifest extends PluginManifest {
         putFileView("MTF Archive",  loadIcon("/_arc.png"),  FileType.Archive,   MTArchive.class,            "arc");
         putFileView("MTF Texture",  loadIcon("/_tex.png"),  FileType.Texture,   MTTexturePack.class,        "tex", "rtex");
         putFileView("MTF Model",    loadIcon("/_mod.png"),  FileType.World,     MTMod.class,                "mod");
-        putFileView("MTF Message",  loadIcon("/_msg.png"),  FileType.Custom,    MessageEditor.class,        "msg", "msg2");
+//        putFileView("MTF Message",  loadIcon("/_msg.png"),  FileType.Custom,    MessageEditor.class,        "msg", "msg2");
+        putFileView("MTF Message",  loadIcon("/_msg.png"),  FileType.Message,   MTMessage.class,        "msg", "msg2");
         putFileView("MTF Material", null,                   FileType.Material,  MTMaterialLibrary.class,    "mrl");
         
         // TODO: define your custom control panel here

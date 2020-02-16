@@ -95,6 +95,11 @@ public class MTMaterialLibrary extends IMaterialPack<MTMaterial, MTTexture> {
     }
     
     @Override
+    public byte[] encode() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
     public Collection<DumpEntry> dump(DataStream ds) {
         addDump(DumpEntry.FOURCC, "magic", 0);
         addDump(DumpEntry.INT, "version", 4);

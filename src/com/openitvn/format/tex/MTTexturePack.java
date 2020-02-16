@@ -45,6 +45,11 @@ public class MTTexturePack extends ITexturePack {
     }
     
     @Override
+    public byte[] encode() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
     public Collection<DumpEntry> dump(DataStream ds) {
         addDump(DumpEntry.FOURCC, "magic", 0);
         addDump(DumpEntry.UBYTE, "version", 4);

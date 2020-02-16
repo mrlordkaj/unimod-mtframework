@@ -14,15 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.unicore.plugin.msg;
+package com.openitvn.format.msg;
 
 /**
  *
  * @author Thinh Pham
  */
 public class MTChar {
-    private final int charCode;
-    private final String decode;
+    
+    public final int charCode;
+    public final String decode;
     
     public MTChar(int charCode, String decode) {
         this.charCode = charCode;
@@ -39,13 +40,5 @@ public class MTChar {
                 this.decode = decode;
                 break;
         }
-    }
-    
-    public int charCode() {
-        return charCode;
-    }
-    
-    public String decode() {
-        return decode;
     }
 }

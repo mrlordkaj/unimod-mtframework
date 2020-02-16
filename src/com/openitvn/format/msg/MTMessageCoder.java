@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.openitvn.unicore.plugin.msg;
+package com.openitvn.format.msg;
 
 import com.openitvn.unicore.data.DataStream;
 import java.util.ArrayList;
@@ -25,22 +25,21 @@ import java.util.regex.Pattern;
  *
  * @author Thinh Pham
  */
-public abstract class MTMessageConverter {
+public abstract class MTMessageCoder {
     
-    public static Integer[] encodeMessage(String originString) {
-        //at first, we convert all control code to human-readable hex
-        Pattern controlPattern = Pattern.compile("^.*(\\<[A-Za-z]+\\>).*$");
-        Matcher controlMatcher = controlPattern.matcher(originString);
-        while (controlMatcher.matches()) {
-            String controlCode = controlMatcher.group(1);
-            int charCode = MTCharmap.getInstance().encode(controlCode);
-            originString = originString.replaceFirst(controlCode, String.format("[0x%08X]", charCode));
-            controlMatcher = controlPattern.matcher(originString);
+    public static Integer[] encodeMessage(String original) {
+        // at first, we convert all control code to human-readable hex
+        Pattern ctrlPattern = Pattern.compile("^.*(\\<[A-Za-z]+\\>).*$");
+        Matcher ctrlMatcher = ctrlPattern.matcher(original);
+        while (ctrlMatcher.matches()) {
+            String ctrlCode = ctrlMatcher.group(1);
+            int charCode = MTCharmap.encode(ctrlCode);
+            original = original.replaceFirst(ctrlCode, String.format("[0x%08X]", charCode));
+            ctrlMatcher = ctrlPattern.matcher(original);
         }
-        
-        //then, we break down to array of single human-readable hex codes,
-        //at last, convert all to integer values upon character map
-        StringBuilder sb = new StringBuilder(originString);
+        // then, we break down to array of single human-readable hex codes,
+        // at last, convert all to integer values upon character map
+        StringBuilder sb = new StringBuilder(original);
         Pattern hexPattern = Pattern.compile("^\\[0[xX][0-9a-fA-F]{8}\\].*$");
         ArrayList<Integer> charCodes = new ArrayList<>();
         while (sb.length() > 0) {
@@ -50,29 +49,28 @@ public abstract class MTMessageConverter {
                 charCodes.add(Integer.parseInt(hexCode, 16));
                 sb.delete(0, 12);
             } else {
-                charCodes.add(MTCharmap.getInstance().encode(String.valueOf(sb.charAt(0))));
+                charCodes.add(MTCharmap.encode(String.valueOf(sb.charAt(0))));
                 sb.deleteCharAt(0);
             }
         }
-        
-        //convert to array of integers
+        // convert to array of integers
         return charCodes.toArray(new Integer[charCodes.size()]);
     }
     
     public static String decodeMessage(DataStream ds) {
         StringBuilder sb = new StringBuilder();
         int charCode;
-        boolean lineRemaining = true;
-        
-        int endCode = MTCharmap.getInstance().getEndCode();
-        while (lineRemaining) {
+        boolean lineRemain = true;
+        int endCode = MTCharmap.getEndCode();
+        while (lineRemain) {
             charCode = ds.getInt();
             if (charCode == endCode) {
-                lineRemaining = false;
+                lineRemain = false;
             } else {
-                String decode = MTCharmap.getInstance().decode(charCode);
-                if(decode == null) sb.append(String.format("[0x%08X]", charCode));
-                else sb.append(decode);
+                String decode = MTCharmap.decode(charCode);
+                sb.append(decode == null ?
+                        String.format("[0x%08X]", charCode) :
+                        decode);
             }
         }
         return sb.toString();
