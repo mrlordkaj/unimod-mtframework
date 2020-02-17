@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 /**
  *
@@ -51,7 +52,7 @@ public class MTMessage extends IMessage {
             ds.get(unk3);
             // read lines
             for (short i = 0; i < numLines; i++) {
-                addEntry(MTMessageCoder.decodeMessage(ds), "");
+                addEntry(MTMessageCoder.decodeMessage(ds));
             }
         } else {
             throw new UnsupportedOperationException("Invalid MTF Message file format");
@@ -74,7 +75,8 @@ public class MTMessage extends IMessage {
             bb = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
             for (IMessageEntry e : entries) {
                 // write line
-                for (int charCode : MTMessageCoder.encodeMessage(e.getMessageForCompile())) {
+                ArrayList<Integer> charCodes = MTMessageCoder.encodeMessage(e.getMessageForCompile());
+                for (int charCode : charCodes) {
                     bb.putInt(0, charCode);
                     bos.write(bb.array());
                 }
@@ -96,5 +98,14 @@ public class MTMessage extends IMessage {
         return file.exists() ?
                 new FileInputStream(file) :
                 getClass().getResourceAsStream(MTCharmap.INTERNAL_CHARMAP);
+    }
+    
+    @Override
+    public String[] getEscapePatterns() {
+        return new String[] {
+            "\\[0[xX][0-9A-F]+\\]",
+            "<[A-Z0-9_]+>",
+            "\\(dummy\\)"
+        };
     }
 }

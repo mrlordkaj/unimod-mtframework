@@ -27,9 +27,9 @@ import java.util.regex.Pattern;
  */
 public abstract class MTMessageCoder {
     
-    public static Integer[] encodeMessage(String original) {
+    public static ArrayList<Integer> encodeMessage(String original) {
         // at first, we convert all control code to human-readable hex
-        Pattern ctrlPattern = Pattern.compile("^.*(\\<[A-Za-z]+\\>).*$");
+        Pattern ctrlPattern = Pattern.compile("^.*(\\<[A-Z0-9_]+\\>).*$");
         Matcher ctrlMatcher = ctrlPattern.matcher(original);
         while (ctrlMatcher.matches()) {
             String ctrlCode = ctrlMatcher.group(1);
@@ -54,7 +54,7 @@ public abstract class MTMessageCoder {
             }
         }
         // convert to array of integers
-        return charCodes.toArray(new Integer[charCodes.size()]);
+        return charCodes;
     }
     
     public static String decodeMessage(DataStream ds) {

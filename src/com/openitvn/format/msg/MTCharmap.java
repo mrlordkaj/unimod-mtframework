@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
  */
 public class MTCharmap {
     
-    public static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.tbl";
-    public static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.tbl";
+    public static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.chr";
+    public static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.chr";
     
     private int undefCode = 0x00440016; // use character "?" for undefined chars
     private int endCode = 0x04010000; // termine sentencies
@@ -67,7 +67,7 @@ public class MTCharmap {
                     String decode = matcher.group(2);
                     if ("?".equals(decode))
                         undefCode = charCode;
-                    if ("<end>".equals(decode))
+                    if ("<END>".equals(decode))
                         endCode = charCode;
                     charMap.add(new MTChar(charCode, decode));
                 }
