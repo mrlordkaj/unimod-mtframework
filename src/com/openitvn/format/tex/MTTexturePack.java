@@ -27,17 +27,6 @@ import java.util.Collection;
  * @author Thinh Pham
  */
 public class MTTexturePack extends ITexturePack {
-        
-    @Override
-    public void fromSource(ITexturePack src) {
-        try {
-            MTTexture tex = new MTTexture(false);
-            tex.replace(src.textures.get(0));
-            textures.add(tex);
-        } catch (IndexOutOfBoundsException ex) {
-            throw new UnsupportedOperationException("Can't copy from empty source file.");
-        }
-    }
     
     @Override
     public void decode(DataStream ds) {
@@ -47,7 +36,7 @@ public class MTTexturePack extends ITexturePack {
     @Override
     public byte[] encode() {
         ITexture origin = textures.get(0);
-        ITexture patch = patchMap.get(0);
+        ITexture patch = patches.get(0);
         return origin.compilePatch(patch);
     }
     

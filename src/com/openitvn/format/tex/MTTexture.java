@@ -311,14 +311,4 @@ public class MTTexture extends ITexture {
             }
         }
     }
-
-    @Override
-    public boolean replace(ITexture src) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public byte[] encodeImage(IRaster src, int face) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }
