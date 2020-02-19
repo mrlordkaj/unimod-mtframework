@@ -64,10 +64,10 @@ public class MTMaterial extends IMaterial {
     }
     
     public String normalizeName() {
-        String name = MTMaterialHash.getName(nameHash);
-        id = (name != null) ? name :
+        String hashName = MTMaterialHash.getName(nameHash);
+        name = (hashName != null) ? hashName :
                 String.format("0x%1$08x (%2$s)", nameHash, diffuseTexture);
-        return name;
+        return hashName;
     }
     
     public void readBuffer32(DataStream ds, ArrayList<MTTexture> textures) {

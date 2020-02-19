@@ -40,18 +40,23 @@ public class MTTexture extends ITexture {
     public static final int MAGIC_TEX  = StringHelper.makeFourCC('T','E','X','\0');
     public static final int MAGIC_RTEX = StringHelper.makeFourCC('R','T','X','\0');
     
-    private final boolean isRitual;
+    private final boolean isAbstract;
     private short version, revision;
     private MTTextureHeader header;
     private byte[][] cubeMapBuffer;
     private byte[][][] rasterBuffer;
+    private int[][] imageOffsets;
     
-    public MTTexture(boolean isRitual) {
-        this.isRitual = isRitual;
+    public MTTexture(boolean isAbstract) {
+        this.isAbstract = isAbstract;
+        dataStream = null;
     }
+    
+    private final DataStream dataStream;
     
     public MTTexture(DataStream ds) {
         super(FileHelper.getFileName(ds.getLastPath()));
+        dataStream = ds;
         setUWrap(GL20.GL_REPEAT);
         setVWrap(GL20.GL_REPEAT);
         
@@ -59,7 +64,7 @@ public class MTTexture extends ITexture {
         if (magic != MAGIC_TEX && magic != MAGIC_RTEX)
             throw new UnsupportedOperationException("Invalid MTF Texture");
         
-        isRitual = (magic == MAGIC_RTEX);
+        isAbstract = (magic == MAGIC_RTEX);
         version = ds.getUByte();
         revision = ds.getUByte();
         switch (version) {
@@ -79,7 +84,7 @@ public class MTTexture extends ITexture {
                 throw new UnsupportedOperationException("Unsupported MTF Texture v" + version);
         }
         
-        if (!isRitual) {
+        if (!isAbstract) {
             // copy cubemap data, 18 bytes per face
             if (header.isCubeMap()) {
                 cubeMapBuffer = new byte[header.faceCount][];
@@ -87,92 +92,92 @@ public class MTTexture extends ITexture {
                     cubeMapBuffer[i] = ds.get(new byte[18]);
             }
             // read image buffer offsets
-            int[][] offsets = new int[header.faceCount][header.mipCount];
+            imageOffsets = new int[header.faceCount][header.mipCount];
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++)
-                    offsets[i][j] = ds.getInt();
+                    imageOffsets[i][j] = ds.getInt();
             }
             // copy imageBuffer from offset values above
             rasterBuffer = new byte[header.faceCount][header.mipCount][];
             for (int i = 0; i < header.faceCount; i++) {
                 for(int j = 0; j < header.mipCount; j++) {
                     Dimension imageSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
-                    int bufferSize = header.getFormat().computeImageBufferSize(imageSize);
-                    ds.position(offsets[i][j]);
+                    int bufferSize = header.getPixelFormat().computeImageBufferSize(imageSize);
+                    ds.position(imageOffsets[i][j]);
                     rasterBuffer[i][j] = ds.get(new byte[bufferSize]);
                 }
             }
         }
     }
     
-    @Override
-    public boolean replace(ITexture source) throws UnsupportedOperationException {
-        //open creator form
-        MTTextureVersion ver = MTTextureVersion.fromValue(version);
-        MTTextureVariant var;
-        if (source.isCubeMap())
-            var = MTTextureVariant.CubeMap;
-        else if(header != null)
-            var = header.getVariant();
-        else
-            var = MTTextureVariant.DiffuseMap;
-        short width = (short)source.getWidth();
-        short height = (short)source.getHeight();
-        byte faceCount = (byte)source.getFaceCount();
-        byte mipCount = (byte)source.getMipCount();
-        IPixelFormat fmt = source.getPixelFormat();
-        FormCreator creator = new FormCreator(ver, var, width, height, faceCount, mipCount, fmt);
-        creator.setVisible(true);
-        
-        if (!creator.isCancelled) {
-            //create new header based creator form
-            version = creator.version.getValue();
-            switch (creator.version) {
-                case RE5:
-                    header = new MTTextureHeader11(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
-                    break;
-
-                default:
-                    header = new MTTextureHeader15(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
-                    break;
-            }
-            //encode or copy source data
-            if (!isRitual) {
-                if (source.isCubeMap() && cubeMapBuffer == null) {
-                    if (source instanceof MTTexture)
-                        cubeMapBuffer = ((MTTexture)source).cubeMapBuffer;
-                    else
-                        cubeMapBuffer = new byte[6][18];
-                }
-                //TODO: currently support copy same format
-                rasterBuffer = new byte[header.faceCount][header.mipCount][];
-                switch (header.getFormat()) {
-                    case D3DFMT_A8R8G8B8:
-                        for (int i = 0; i < header.faceCount; i++) {
-                            for (int j = 0; j < header.mipCount; j++) {
-                                Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
-                                ARGBRaster tmp = new ARGBRaster(mipSize.width, mipSize.height);
-                                source.decodeImage(tmp, i, j);
-                                rasterBuffer[i][j] = tmp.unwrap();
-                            }
-                        }
-                        break;
-
-                    default:
-                        //same format, just copy buffer
-                        for (int i = 0; i < header.faceCount; i++) {
-                            for(int j = 0; j < header.mipCount; j++)
-                                rasterBuffer[i][j] = source.getImageBuffer(i, j);
-                        }
-                        break;
-                }
-                
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
+//    @Override
+//    public boolean replace(ITexture source) throws UnsupportedOperationException {
+//        // open creator form
+//        MTTextureVersion ver = MTTextureVersion.fromValue(version);
+//        MTTextureVariant var;
+//        if (source.isCubeMap())
+//            var = MTTextureVariant.CubeMap;
+//        else if (header != null)
+//            var = header.getVariant();
+//        else
+//            var = MTTextureVariant.DiffuseMap;
+//        short width = (short)source.getWidth();
+//        short height = (short)source.getHeight();
+//        byte faceCount = (byte)source.getFaceCount();
+//        byte mipCount = (byte)source.getMipCount();
+//        IPixelFormat fmt = source.getPixelFormat();
+//        FormCreator creator = new FormCreator(ver, var, width, height, faceCount, mipCount, fmt);
+//        creator.setVisible(true);
+//        
+//        if (!creator.isCancelled) {
+//            // create new header based creator form
+//            version = creator.version.getValue();
+//            switch (creator.version) {
+//                case RE5:
+//                    header = new MTTextureHeader11(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
+//                    break;
+//
+//                default:
+//                    header = new MTTextureHeader15(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
+//                    break;
+//            }
+//            //encode or copy source data
+//            if (!isAbstract) {
+//                if (source.isCubeMap() && cubeMapBuffer == null) {
+//                    if (source instanceof MTTexture)
+//                        cubeMapBuffer = ((MTTexture)source).cubeMapBuffer;
+//                    else
+//                        cubeMapBuffer = new byte[6][18];
+//                }
+//                //TODO: currently support copy same format
+//                rasterBuffer = new byte[header.faceCount][header.mipCount][];
+//                switch (header.getPixelFormat()) {
+//                    case D3DFMT_A8R8G8B8:
+//                        for (int i = 0; i < header.faceCount; i++) {
+//                            for (int j = 0; j < header.mipCount; j++) {
+//                                Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
+//                                ARGBRaster tmp = new ARGBRaster(mipSize.width, mipSize.height);
+//                                source.decodeImage(tmp, i, j);
+//                                rasterBuffer[i][j] = tmp.getBytes();
+//                            }
+//                        }
+//                        break;
+//
+//                    default:
+//                        //same format, just copy buffer
+//                        for (int i = 0; i < header.faceCount; i++) {
+//                            for(int j = 0; j < header.mipCount; j++)
+//                                rasterBuffer[i][j] = source.getImageBuffer(i, j);
+//                        }
+//                        break;
+//                }
+//                
+//            }
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
     
     //<editor-fold desc="Texture Properties" defaultstate="collapsed">
     
@@ -200,58 +205,75 @@ public class MTTexture extends ITexture {
     public ICubeMapHeader getCubeMapHeader() {
         ICubeMapHeader cm = new ICubeMapHeader();
         if (header.isCubeMap()) {
-            cm.hasPositiveX = true;
-            cm.hasPositiveY = true;
-            cm.hasPositiveZ = true;
-            cm.hasNegativeX = true;
-            cm.hasNegativeY = true;
-            cm.hasNegativeZ = true;
+            cm.hasPX = true;
+            cm.hasPY = true;
+            cm.hasPZ = true;
+            cm.hasNX = true;
+            cm.hasNY = true;
+            cm.hasNZ = true;
         }
         return cm;
     }
     
     @Override
     public IPixelFormat getPixelFormat() {
-        return header.getFormat();
+        return header.getPixelFormat();
     }
     //</editor-fold>
     
     //<editor-fold desc="File Data Management" defaultstate="collapsed">
     @Override
-    public byte[] unwrap() {
-        byte[] headerData = header.toBuffer();
-        //pre-calculate fileSize
+    public byte[] compilePatch(ITexture src) {
+        // change header to match source
+        header.width = (short)src.getWidth();
+        header.height = (short)src.getHeight();
+        header.faceCount = (byte)src.getFaceCount();
+        header.mipCount = (byte)src.getMipCount();
+        header.setPixelFormat(src.getPixelFormat());
+        
+        // copy buffer data from source
+        rasterBuffer = new byte[header.faceCount][header.mipCount][];
+        for (int i = 0; i < header.faceCount; i++) {
+            for (int j = 0; j < header.mipCount; j++) {
+                rasterBuffer[i][j] = src.getImageBuffer(i, j);
+            }
+        }
+        
+        // precomp fileSize
+        byte[] headerData = header.toData();
         int fileSize = headerData.length + 6;
         int[][] offsets = new int[header.faceCount][header.mipCount];
-        if(!isRitual) {
-            if(header.isCubeMap()) fileSize += header.faceCount * 18;
+        if (!isAbstract) {
+            if (header.isCubeMap())
+                fileSize += header.faceCount * 18;
             fileSize += header.faceCount * header.mipCount * 4;
-            for(int i = 0; i < header.faceCount; i++) {
-                for(int j = 0; j < header.mipCount; j++) {
+            for (int i = 0; i < header.faceCount; i++) {
+                for (int j = 0; j < header.mipCount; j++) {
                     offsets[i][j] = fileSize;
-                    fileSize += rasterBuffer[i][j].length; //end of current buffer is begining of next buffer
+                    // end of current buffer is begining of next buffer
+                    fileSize += rasterBuffer[i][j].length;
                 }
             }
         }
         ByteBuffer data = ByteBuffer.allocate(fileSize).order(ByteOrder.LITTLE_ENDIAN);
-        //write header
-        data.putInt(isRitual ? MAGIC_RTEX : MAGIC_TEX);
+        // write header
+        data.putInt(isAbstract ? MAGIC_RTEX : MAGIC_TEX);
         data.putShort(version);
         data.put(headerData);
-        if (!isRitual) {
-            //write CubeMap data if exists
+        if (!isAbstract) {
+            // write CubeMap data if exists
             if (header.isCubeMap()) {
                 for (byte[] bb : cubeMapBuffer)
                     data.put(bb);
             }
-            //write image's buffer offsets
+            // write image's buffer offsets
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++)
                     data.putInt(offsets[i][j]);
             }
-            //write image's buffers
-            for(int i = 0; i < header.faceCount; i++) {
-                for(int j = 0; j < header.mipCount; j++)
+            // write image's buffers
+            for (int i = 0; i < header.faceCount; i++) {
+                for (int j = 0; j < header.mipCount; j++)
                     data.put(rasterBuffer[i][j]);
             }
         }
@@ -260,27 +282,21 @@ public class MTTexture extends ITexture {
     
     @Override
     public byte[] getImageBuffer(int imageId, int mipMapLevel) {
-        if (isRitual)
-            throw new UnsupportedOperationException("Ritual Texture does not contains image data.");
+        if (isAbstract)
+            throw new UnsupportedOperationException("Abstract Texture does not contains image data.");
         return rasterBuffer[imageId][mipMapLevel];
     }
     
     //</editor-fold>
     
-    //<editor-fold desc="Encode / Decode" defaultstate="collapsed">
-    @Override
-    public byte[] encodeImage(IRaster src, IPixelFormat fmt) {
-        throw new UnsupportedOperationException("Unsupported encoding format "+fmt);
-    }
-    
     @Override
     public void decodeImage(IRaster dst, int face, int mip) {
-        if (!isRitual) {
+        if (!isAbstract) {
             Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, mip);
             ByteBuffer bb = ByteBuffer.wrap(rasterBuffer[face][mip]).order(ByteOrder.LITTLE_ENDIAN);
             TextureHelper.decodeImage(dst, mipSize, getPixelFormat(), bb);
             if (header instanceof MTTextureHeader11) {
-                // version 1.1 have channel multipler
+                // ver 1.1 have channel multipler
                 MTTextureHeader11 h = (MTTextureHeader11) header;
                 byte[] rgba = new byte[4];
                 for (int y = 0; y < dst.getHeight(); y++) {
@@ -295,5 +311,14 @@ public class MTTexture extends ITexture {
             }
         }
     }
-    //</editor-fold>
+
+    @Override
+    public boolean replace(ITexture src) throws IndexOutOfBoundsException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public byte[] encodeImage(IRaster src, int face) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

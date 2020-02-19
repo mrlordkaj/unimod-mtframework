@@ -28,16 +28,17 @@ import java.nio.ByteOrder;
  * @author Thinh Pham
  */
 public class MTTextureHeader11 extends MTTextureHeader {
+    
     private static final int STRUCT_SIZE = 34;
     private static final int VARIANT_BM = 0x0022;
     private static final int VARIANT_MM = 0x0002; //MM, CMM
     private static final int VARIANT_NM = 0x0032; //NM, DM
     private static final int VARIANT_CM = 0x0013; //CubeMap
     
-    private final byte unk1; //uwrap?
-    private final byte unk2; //vwrap?
-    private final int unk3;
-    private int formatRE5;
+    public final byte unk1; //uwrap?
+    public final byte unk2; //vwrap?
+    public final int unk3;
+    public int formatRE5;
     public final float preR;
     public final float preG;
     public final float preB;
@@ -59,7 +60,7 @@ public class MTTextureHeader11 extends MTTextureHeader {
         preA = ds.getFloat();
     }
     
-    public MTTextureHeader11(MTTextureVariant variant, short width, short height, byte mipCount, IPixelFormat format) throws UnsupportedOperationException {
+    public MTTextureHeader11(MTTextureVariant variant, short width, short height, byte mipCount, IPixelFormat format) {
         switch (variant) {
             case NormalMap:
                 this.variant = VARIANT_NM;
@@ -113,32 +114,32 @@ public class MTTextureHeader11 extends MTTextureHeader {
     }
     
     @Override
-    protected byte[] toBuffer() {
-        ByteBuffer header = ByteBuffer.allocate(STRUCT_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        header.putShort(variant);
-        header.put(mipCount);
-        header.put(faceCount);
-        header.put(unk1);
-        header.put(unk2);
-        header.putShort(width);
-        header.putShort(height);
-        header.putInt(unk3);
-        header.putInt(formatRE5);
-        header.putFloat(preR);
-        header.putFloat(preG);
-        header.putFloat(preB);
-        header.putFloat(preA);
-        header.rewind();
-        return header.array();
+    public byte[] toData() {
+        ByteBuffer bb = ByteBuffer.allocate(STRUCT_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        bb.putShort(variant);
+        bb.put(mipCount);
+        bb.put(faceCount);
+        bb.put(unk1);
+        bb.put(unk2);
+        bb.putShort(width);
+        bb.putShort(height);
+        bb.putInt(unk3);
+        bb.putInt(formatRE5);
+        bb.putFloat(preR);
+        bb.putFloat(preG);
+        bb.putFloat(preB);
+        bb.putFloat(preA);
+        bb.rewind();
+        return bb.array();
     }
     
     @Override
-    protected boolean isCubeMap() {
+    public boolean isCubeMap() {
         return (variant == VARIANT_CM);
     }
     
     @Override
-    protected final IPixelFormat getFormat() throws UnsupportedOperationException {
+    public final IPixelFormat getPixelFormat() throws UnsupportedOperationException {
         switch (formatRE5) {
             case 0x00000015:
                 return IPixelFormat.D3DFMT_A8R8G8B8;
@@ -158,7 +159,29 @@ public class MTTextureHeader11 extends MTTextureHeader {
     }
     
     @Override
-    protected MTTextureVariant getVariant() {
+    public final void setPixelFormat(IPixelFormat format) {
+        switch (format) {
+            case D3DFMT_A8R8G8B8:
+                formatRE5 = 0x00000015;
+                return;
+                
+            case D3DFMT_DXT1:
+                formatRE5 = 0x31545844;
+                return;
+                
+            case D3DFMT_DXT3:
+                formatRE5 = 0x33545844;
+                return;
+                
+            case D3DFMT_DXT5:
+                formatRE5 = 0x35545844;
+                return;
+        }
+        throw new UnsupportedOperationException("Unsupported "+ format);
+    }
+    
+    @Override
+    public MTTextureVariant getVariant() {
         switch (variant) {
             case VARIANT_MM:
                 return MTTextureVariant.LightMap;

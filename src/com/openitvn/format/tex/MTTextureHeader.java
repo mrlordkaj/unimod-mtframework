@@ -25,13 +25,17 @@ import com.openitvn.unicore.raster.IPixelFormat;
 public abstract class MTTextureHeader {
     
     protected short variant;
-    protected short width;
-    protected short height;
-    protected byte faceCount;
-    protected byte mipCount;
+    public short width;
+    public short height;
+    public byte faceCount;
+    public byte mipCount;
     
-    protected abstract MTTextureVariant getVariant();
-    protected abstract boolean isCubeMap();
-    protected abstract IPixelFormat getFormat();
-    protected abstract byte[] toBuffer();
+    public abstract MTTextureVariant getVariant();
+    public abstract boolean isCubeMap();
+    
+    public abstract byte[] toData();
+    
+    public abstract IPixelFormat getPixelFormat();
+    
+    public abstract void setPixelFormat(IPixelFormat format);
 }

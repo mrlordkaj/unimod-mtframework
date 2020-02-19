@@ -33,7 +33,7 @@ public class MTTexturePack extends ITexturePack {
         try {
             MTTexture tex = new MTTexture(false);
             tex.replace(src.textures.get(0));
-            addTexture(tex);
+            textures.add(tex);
         } catch (IndexOutOfBoundsException ex) {
             throw new UnsupportedOperationException("Can't copy from empty source file.");
         }
@@ -41,12 +41,14 @@ public class MTTexturePack extends ITexturePack {
     
     @Override
     public void decode(DataStream ds) {
-        super.addTexture(new MTTexture(ds));
+        textures.add(new MTTexture(ds));
     }
     
     @Override
-    public byte[] encode() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public byte[] encode() {
+        ITexture origin = textures.get(0);
+        ITexture patch = patchMap.get(0);
+        return origin.compilePatch(patch);
     }
     
     @Override
@@ -80,18 +82,5 @@ public class MTTexturePack extends ITexturePack {
                 break;
         }
         return super.dump(ds);
-    }
-    
-    @Override
-    public byte[] unwrap() {
-        return textures.get(0).unwrap();
-    }
-    
-    @Override
-    public void addTexture(ITexture tex) {
-        if (textures.size() > 0)
-            throw new UnsupportedOperationException("MT Texture format does not support array operations.");
-        else
-            super.addTexture(tex);
     }
 }

@@ -21,11 +21,11 @@ package com.openitvn.format.tex;
  * @author Thinh Pham
  */
 public enum MTTextureVariant {
+    
     DiffuseMap ("Diffuse Map"),
     NormalMap  ("Normal Map"),
     LightMap   ("Light Map"),
-    CubeMap    ("Cube Map"),
-    ;
+    CubeMap    ("Cube Map");
     
     private final String name;
     

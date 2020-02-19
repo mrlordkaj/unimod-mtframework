@@ -82,7 +82,7 @@ public class ARGBRaster implements IRaster {
         }
     }
     
-    public byte[] unwrap() {
+    public byte[] getBytes() {
         return data.array();
     }
 }

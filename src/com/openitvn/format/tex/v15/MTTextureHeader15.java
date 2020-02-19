@@ -28,13 +28,14 @@ import java.nio.ByteOrder;
  * @author Thinh Pham
  */
 public class MTTextureHeader15 extends MTTextureHeader {
+    
     private static final int STRUCT_SIZE = 10;
     private static final int VARIANT_COMMON  = 0x2000;
     private static final int VARIANT_CUBEMAP = 0x6000;
     
-    private byte formatRE6;
-    private final byte unk1; //uwrap?
-    private final byte unk2; //vwrap?
+    public byte formatRE6;
+    public final byte unk1; //uwrap?
+    public final byte unk2; //vwrap?
     
     public MTTextureHeader15(DataStream ds) {
         variant = ds.getShort();
@@ -91,7 +92,7 @@ public class MTTextureHeader15 extends MTTextureHeader {
     }
     
     @Override
-    protected byte[] toBuffer() {
+    public byte[] toData() {
         ByteBuffer header = ByteBuffer.allocate(STRUCT_SIZE).order(ByteOrder.LITTLE_ENDIAN);
         header.putShort(variant);
         header.put(mipCount);
@@ -105,7 +106,7 @@ public class MTTextureHeader15 extends MTTextureHeader {
     }
     
     @Override
-    protected final IPixelFormat getFormat() throws UnsupportedOperationException {
+    public final IPixelFormat getPixelFormat() {
         switch (formatRE6) {
             case 0x07:
             case 0x08:
@@ -149,12 +150,34 @@ public class MTTextureHeader15 extends MTTextureHeader {
     }
     
     @Override
-    protected boolean isCubeMap() {
+    public final void setPixelFormat(IPixelFormat format) {
+        switch (format) {
+            case D3DFMT_A8R8G8B8:
+                formatRE6 = 0x07;
+                return;
+                
+            case D3DFMT_DXT1:
+                formatRE6 = 0x13;
+                return;
+                
+            case D3DFMT_DXT3:
+                formatRE6 = 0x15;
+                return;
+                
+            case D3DFMT_DXT5:
+                formatRE6 = 0x17;
+                return;
+        }
+        throw new UnsupportedOperationException("Unsupported "+ format);
+    }
+    
+    @Override
+    public boolean isCubeMap() {
         return (variant == VARIANT_CUBEMAP);
     }
     
     @Override
-    protected MTTextureVariant getVariant() {
+    public MTTextureVariant getVariant() {
         if (variant == VARIANT_CUBEMAP)
             return MTTextureVariant.CubeMap;
         else
