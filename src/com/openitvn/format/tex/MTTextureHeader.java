@@ -30,12 +30,8 @@ public abstract class MTTextureHeader {
     public byte faceCount;
     public byte mipCount;
     
-    public abstract MTTextureVariant getVariant();
-    public abstract boolean isCubeMap();
-    
-    public abstract byte[] toData();
-    
     public abstract IPixelFormat getPixelFormat();
-    
     public abstract void setPixelFormat(IPixelFormat format);
+    public abstract boolean isCubeMap();
+    public abstract byte[] toData();
 }

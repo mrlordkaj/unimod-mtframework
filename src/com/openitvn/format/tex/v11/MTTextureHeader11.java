@@ -19,7 +19,6 @@ package com.openitvn.format.tex.v11;
 import com.openitvn.unicore.raster.IPixelFormat;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.format.tex.MTTextureHeader;
-import com.openitvn.format.tex.MTTextureVariant;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -60,59 +59,6 @@ public class MTTextureHeader11 extends MTTextureHeader {
         preA = ds.getFloat();
     }
     
-    public MTTextureHeader11(MTTextureVariant variant, short width, short height, byte mipCount, IPixelFormat format) {
-        switch (variant) {
-            case NormalMap:
-                this.variant = VARIANT_NM;
-                this.faceCount = 1;
-                break;
-                
-            case LightMap:
-                this.variant = VARIANT_MM;
-                this.faceCount = 1;
-                break;
-                
-            case CubeMap:
-                this.variant = VARIANT_CM;
-                this.faceCount = 6;
-                break;
-                
-            default:
-                this.variant = VARIANT_BM;
-                this.faceCount = 1;
-                break;
-        }
-        switch (format) {
-            case D3DFMT_A8R8G8B8:
-            case DXGI_FORMAT_B8G8R8A8_UNORM:
-                formatRE5 = 0x00000015;
-                break;
-                
-            case D3DFMT_DXT1:
-            case DXGI_FORMAT_BC1_UNORM:
-                formatRE5 = 0x31545844;
-                break;
-                
-            case D3DFMT_DXT3:
-            case DXGI_FORMAT_BC2_UNORM:
-                formatRE5 = 0x33545844;
-                break;
-                
-            case D3DFMT_DXT5:
-            case DXGI_FORMAT_BC3_UNORM:
-                formatRE5 = 0x35545844;
-                break;
-                
-            default:
-                throw new UnsupportedOperationException(String.format("Pixel Format %1$s is not supported yet.", format));
-        }
-        this.mipCount = mipCount;
-        this.width = width;
-        this.height = height;
-        preA = preR = preG = preB = 1;
-        unk3 = unk2 = unk1 = 0;
-    }
-    
     @Override
     public byte[] toData() {
         ByteBuffer bb = ByteBuffer.allocate(STRUCT_SIZE).order(ByteOrder.LITTLE_ENDIAN);
@@ -139,7 +85,7 @@ public class MTTextureHeader11 extends MTTextureHeader {
     }
     
     @Override
-    public final IPixelFormat getPixelFormat() throws UnsupportedOperationException {
+    public final IPixelFormat getPixelFormat() {
         switch (formatRE5) {
             case 0x00000015:
                 return IPixelFormat.D3DFMT_A8R8G8B8;
@@ -152,10 +98,8 @@ public class MTTextureHeader11 extends MTTextureHeader {
 
             case 0x35545844:
                 return IPixelFormat.D3DFMT_DXT5;
-
-            default:
-                throw new UnsupportedOperationException(String.format("Pixel Format %1$02X is not supported yet.", formatRE5));
         }
+        throw new UnsupportedOperationException(String.format("Pixel Format %1$02X is not supported yet.", formatRE5));
     }
     
     @Override
@@ -178,22 +122,5 @@ public class MTTextureHeader11 extends MTTextureHeader {
                 return;
         }
         throw new UnsupportedOperationException("Unsupported "+ format);
-    }
-    
-    @Override
-    public MTTextureVariant getVariant() {
-        switch (variant) {
-            case VARIANT_MM:
-                return MTTextureVariant.LightMap;
-                
-            case VARIANT_NM:
-                return MTTextureVariant.NormalMap;
-                
-            case VARIANT_CM:
-                return MTTextureVariant.CubeMap;
-                
-            default:
-                return MTTextureVariant.DiffuseMap;
-        }
     }
 }

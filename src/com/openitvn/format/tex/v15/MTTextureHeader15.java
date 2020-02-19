@@ -19,7 +19,6 @@ package com.openitvn.format.tex.v15;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.raster.IPixelFormat;
 import com.openitvn.format.tex.MTTextureHeader;
-import com.openitvn.format.tex.MTTextureVariant;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -47,48 +46,6 @@ public class MTTextureHeader15 extends MTTextureHeader {
         formatRE6 = ds.get();
         unk1 = ds.get();
         unk2 = ds.get();
-    }
-    
-    public MTTextureHeader15(MTTextureVariant variant, short width, short height, byte mipCount, IPixelFormat format) throws UnsupportedOperationException {
-        switch (variant) {
-            case CubeMap:
-                this.variant = VARIANT_CUBEMAP;
-                this.faceCount = 6;
-                break;
-                
-            default:
-                this.variant = VARIANT_COMMON;
-                this.faceCount = 1;
-                break;
-        }
-        switch (format) {
-            case D3DFMT_A8R8G8B8:
-            case DXGI_FORMAT_B8G8R8A8_UNORM:
-                formatRE6 = 0x07;
-                break;
-                
-            case D3DFMT_DXT1:
-            case DXGI_FORMAT_BC1_UNORM:
-                formatRE6 = 0x13;
-                break;
-                
-            case D3DFMT_DXT3:
-            case DXGI_FORMAT_BC2_UNORM:
-                formatRE6 = 0x15;
-                break;
-                
-            case D3DFMT_DXT5:
-            case DXGI_FORMAT_BC3_UNORM:
-                formatRE6 = 0x17;
-                break;
-                
-            default:
-                throw new UnsupportedOperationException(String.format("Pixel Format %1$s is not supported yet.", format));
-        }
-        this.mipCount = mipCount;
-        this.width = width;
-        this.height = height;
-        unk2 = unk1 = 0;
     }
     
     @Override
@@ -143,10 +100,8 @@ public class MTTextureHeader15 extends MTTextureHeader {
                 
             //case 0x1B:
             //    return 3Dc/ATI2;
-            
-            default:
-                throw new UnsupportedOperationException(String.format("Unsupported Format %02X.", formatRE6));
         }
+        throw new UnsupportedOperationException(String.format("Unsupported Format %02X.", formatRE6));
     }
     
     @Override
@@ -174,13 +129,5 @@ public class MTTextureHeader15 extends MTTextureHeader {
     @Override
     public boolean isCubeMap() {
         return (variant == VARIANT_CUBEMAP);
-    }
-    
-    @Override
-    public MTTextureVariant getVariant() {
-        if (variant == VARIANT_CUBEMAP)
-            return MTTextureVariant.CubeMap;
-        else
-            return MTTextureVariant.DiffuseMap;
     }
 }

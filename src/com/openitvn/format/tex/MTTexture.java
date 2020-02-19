@@ -44,19 +44,10 @@ public class MTTexture extends ITexture {
     private short version, revision;
     private MTTextureHeader header;
     private byte[][] cubeMapBuffer;
-    private byte[][][] rasterBuffer;
-    private int[][] imageOffsets;
-    
-    public MTTexture(boolean isAbstract) {
-        this.isAbstract = isAbstract;
-        dataStream = null;
-    }
-    
-    private final DataStream dataStream;
+    private byte[][][] imageBuffers;
     
     public MTTexture(DataStream ds) {
         super(FileHelper.getFileName(ds.getLastPath()));
-        dataStream = ds;
         setUWrap(GL20.GL_REPEAT);
         setVWrap(GL20.GL_REPEAT);
         
@@ -88,96 +79,29 @@ public class MTTexture extends ITexture {
             // copy cubemap data, 18 bytes per face
             if (header.isCubeMap()) {
                 cubeMapBuffer = new byte[header.faceCount][];
-                for (int i = 0; i < cubeMapBuffer.length; i++)
+                for (int i = 0; i < cubeMapBuffer.length; i++) {
                     cubeMapBuffer[i] = ds.get(new byte[18]);
+                }
             }
             // read image buffer offsets
-            imageOffsets = new int[header.faceCount][header.mipCount];
+            int[][] offsets = new int[header.faceCount][header.mipCount];
             for (int i = 0; i < header.faceCount; i++) {
-                for (int j = 0; j < header.mipCount; j++)
-                    imageOffsets[i][j] = ds.getInt();
+                for (int j = 0; j < header.mipCount; j++) {
+                    offsets[i][j] = ds.getInt();
+                }
             }
             // copy imageBuffer from offset values above
-            rasterBuffer = new byte[header.faceCount][header.mipCount][];
+            imageBuffers = new byte[header.faceCount][header.mipCount][];
             for (int i = 0; i < header.faceCount; i++) {
-                for(int j = 0; j < header.mipCount; j++) {
+                for (int j = 0; j < header.mipCount; j++) {
                     Dimension imageSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
                     int bufferSize = header.getPixelFormat().computeImageBufferSize(imageSize);
-                    ds.position(imageOffsets[i][j]);
-                    rasterBuffer[i][j] = ds.get(new byte[bufferSize]);
+                    ds.position(offsets[i][j]);
+                    imageBuffers[i][j] = ds.get(new byte[bufferSize]);
                 }
             }
         }
     }
-    
-//    @Override
-//    public boolean replace(ITexture source) throws UnsupportedOperationException {
-//        // open creator form
-//        MTTextureVersion ver = MTTextureVersion.fromValue(version);
-//        MTTextureVariant var;
-//        if (source.isCubeMap())
-//            var = MTTextureVariant.CubeMap;
-//        else if (header != null)
-//            var = header.getVariant();
-//        else
-//            var = MTTextureVariant.DiffuseMap;
-//        short width = (short)source.getWidth();
-//        short height = (short)source.getHeight();
-//        byte faceCount = (byte)source.getFaceCount();
-//        byte mipCount = (byte)source.getMipCount();
-//        IPixelFormat fmt = source.getPixelFormat();
-//        FormCreator creator = new FormCreator(ver, var, width, height, faceCount, mipCount, fmt);
-//        creator.setVisible(true);
-//        
-//        if (!creator.isCancelled) {
-//            // create new header based creator form
-//            version = creator.version.getValue();
-//            switch (creator.version) {
-//                case RE5:
-//                    header = new MTTextureHeader11(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
-//                    break;
-//
-//                default:
-//                    header = new MTTextureHeader15(creator.variant, creator.width, creator.height, creator.mipCount, creator.format);
-//                    break;
-//            }
-//            //encode or copy source data
-//            if (!isAbstract) {
-//                if (source.isCubeMap() && cubeMapBuffer == null) {
-//                    if (source instanceof MTTexture)
-//                        cubeMapBuffer = ((MTTexture)source).cubeMapBuffer;
-//                    else
-//                        cubeMapBuffer = new byte[6][18];
-//                }
-//                //TODO: currently support copy same format
-//                rasterBuffer = new byte[header.faceCount][header.mipCount][];
-//                switch (header.getPixelFormat()) {
-//                    case D3DFMT_A8R8G8B8:
-//                        for (int i = 0; i < header.faceCount; i++) {
-//                            for (int j = 0; j < header.mipCount; j++) {
-//                                Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
-//                                ARGBRaster tmp = new ARGBRaster(mipSize.width, mipSize.height);
-//                                source.decodeImage(tmp, i, j);
-//                                rasterBuffer[i][j] = tmp.getBytes();
-//                            }
-//                        }
-//                        break;
-//
-//                    default:
-//                        //same format, just copy buffer
-//                        for (int i = 0; i < header.faceCount; i++) {
-//                            for(int j = 0; j < header.mipCount; j++)
-//                                rasterBuffer[i][j] = source.getImageBuffer(i, j);
-//                        }
-//                        break;
-//                }
-//                
-//            }
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
     
     //<editor-fold desc="Texture Properties" defaultstate="collapsed">
     
@@ -221,7 +145,6 @@ public class MTTexture extends ITexture {
     }
     //</editor-fold>
     
-    //<editor-fold desc="File Data Management" defaultstate="collapsed">
     @Override
     public byte[] compilePatch(ITexture src) {
         // change header to match source
@@ -232,10 +155,10 @@ public class MTTexture extends ITexture {
         header.setPixelFormat(src.getPixelFormat());
         
         // copy buffer data from source
-        rasterBuffer = new byte[header.faceCount][header.mipCount][];
+        imageBuffers = new byte[header.faceCount][header.mipCount][];
         for (int i = 0; i < header.faceCount; i++) {
             for (int j = 0; j < header.mipCount; j++) {
-                rasterBuffer[i][j] = src.getImageBuffer(i, j);
+                imageBuffers[i][j] = src.getImageBuffer(i, j);
             }
         }
         
@@ -251,7 +174,7 @@ public class MTTexture extends ITexture {
                 for (int j = 0; j < header.mipCount; j++) {
                     offsets[i][j] = fileSize;
                     // end of current buffer is begining of next buffer
-                    fileSize += rasterBuffer[i][j].length;
+                    fileSize += imageBuffers[i][j].length;
                 }
             }
         }
@@ -274,7 +197,7 @@ public class MTTexture extends ITexture {
             // write image's buffers
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++)
-                    data.put(rasterBuffer[i][j]);
+                    data.put(imageBuffers[i][j]);
             }
         }
         return data.array();
@@ -282,18 +205,14 @@ public class MTTexture extends ITexture {
     
     @Override
     public byte[] getImageBuffer(int imageId, int mipMapLevel) {
-        if (isAbstract)
-            throw new UnsupportedOperationException("Abstract Texture does not contains image data.");
-        return rasterBuffer[imageId][mipMapLevel];
+        return isAbstract ? new byte[0] : imageBuffers[imageId][mipMapLevel];
     }
-    
-    //</editor-fold>
     
     @Override
     public void decodeImage(IRaster dst, int face, int mip) {
         if (!isAbstract) {
             Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, mip);
-            ByteBuffer bb = ByteBuffer.wrap(rasterBuffer[face][mip]).order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuffer bb = ByteBuffer.wrap(imageBuffers[face][mip]).order(ByteOrder.LITTLE_ENDIAN);
             TextureHelper.decodeImage(dst, mipSize, getPixelFormat(), bb);
             if (header instanceof MTTextureHeader11) {
                 // ver 1.1 have channel multipler
