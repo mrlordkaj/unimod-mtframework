@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 
 /**
  *
@@ -52,7 +51,9 @@ public class MTMessage extends IMessage {
             ds.get(unk3);
             // read lines
             for (short i = 0; i < numLines; i++) {
-                addEntry(MTMessageCoder.decodeMessage(ds));
+                String line = MTMessageCoder.decodeMessage(ds)
+                        .replace("<COLOR>", "");
+                addEntry(line);
             }
         } else {
             throw new UnsupportedOperationException("Invalid MTF Message file format");
@@ -71,12 +72,15 @@ public class MTMessage extends IMessage {
             bb.put(unk3);
             bos.write(bb.array());
             // write compiled translation data
-            int endCode = MTCharmap.getEndCode();
+            int endCode = MTMessageCoder.getEndCode();
             bb = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
             for (IMessageEntry e : entries) {
                 // write line
-                ArrayList<Integer> charCodes = MTMessageCoder.encodeMessage(e.getMessageForCompile());
-                for (int charCode : charCodes) {
+                String line = e.getStringForCompile()
+                        .replace("<RED>", "<COLOR><RED>")
+                        .replace("<GREEN>", "<COLOR><GREEN>")
+                        .replace("<BLACK>", "<COLOR><BLACK>");
+                for (int charCode : MTMessageCoder.encodeMessage(line)) {
                     bb.putInt(0, charCode);
                     bos.write(bb.array());
                 }
@@ -94,10 +98,10 @@ public class MTMessage extends IMessage {
     public InputStream openCharmap() throws IOException {
         // open external charmap.tbl from default directory if exist
         // or else open from internal
-        File file = new File(MTCharmap.EXTERNAL_CHARMAP);
+        File file = new File(MTMessageCoder.EXTERNAL_CHARMAP);
         return file.exists() ?
                 new FileInputStream(file) :
-                getClass().getResourceAsStream(MTCharmap.INTERNAL_CHARMAP);
+                getClass().getResourceAsStream(MTMessageCoder.INTERNAL_CHARMAP);
     }
     
     @Override

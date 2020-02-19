@@ -25,6 +25,7 @@ import com.openitvn.unicore.raster.ICubeMapHeader;
 import com.openitvn.unicore.world.resource.ITexture;
 import com.openitvn.unicore.raster.TextureHelper;
 import com.openitvn.unicore.raster.IRaster;
+import com.openitvn.util.FileHelper;
 import com.openitvn.util.StringHelper;
 import java.awt.Dimension;
 import java.nio.ByteBuffer;
@@ -50,13 +51,13 @@ public class MTTexture extends ITexture {
     }
     
     public MTTexture(DataStream ds) {
-        super(ds.getLastPath());
-        super.setUWrap(GL20.GL_REPEAT);
-        super.setVWrap(GL20.GL_REPEAT);
+        super(FileHelper.getFileName(ds.getLastPath()));
+        setUWrap(GL20.GL_REPEAT);
+        setVWrap(GL20.GL_REPEAT);
         
         int magic = ds.getInt();
         if (magic != MAGIC_TEX && magic != MAGIC_RTEX)
-            throw new UnsupportedOperationException("Invalid MTTexture");
+            throw new UnsupportedOperationException("Invalid MTF Texture");
         
         isRitual = (magic == MAGIC_RTEX);
         version = ds.getUByte();
@@ -75,7 +76,7 @@ public class MTTexture extends ITexture {
                 break;
                 
             default:
-                throw new UnsupportedOperationException("Unsupported MTTexture v" + version);
+                throw new UnsupportedOperationException("Unsupported MTF Texture v" + version);
         }
         
         if (!isRitual) {
