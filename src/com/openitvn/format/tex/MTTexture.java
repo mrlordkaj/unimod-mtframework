@@ -48,8 +48,6 @@ public class MTTexture extends ITexture {
     
     public MTTexture(DataStream ds) {
         super(FileHelper.getFileName(ds.getLastPath()));
-        setUWrap(GL20.GL_REPEAT);
-        setVWrap(GL20.GL_REPEAT);
         
         int magic = ds.getInt();
         if (magic != MAGIC_TEX && magic != MAGIC_RTEX)
@@ -102,48 +100,6 @@ public class MTTexture extends ITexture {
             }
         }
     }
-    
-    //<editor-fold desc="Texture Properties" defaultstate="collapsed">
-    
-    @Override
-    public int getWidth() {
-        return header.width;
-    }
-    
-    @Override
-    public int getHeight() {
-        return header.height;
-    }
-    
-    @Override
-    public int getFaceCount() {
-        return header.faceCount;
-    }
-    
-    @Override
-    public int getMipCount() {
-        return header.mipCount;
-    }
-    
-    @Override
-    public ICubeMapHeader getCubeMapHeader() {
-        ICubeMapHeader cm = new ICubeMapHeader();
-        if (header.isCubeMap()) {
-            cm.hasPX = true;
-            cm.hasPY = true;
-            cm.hasPZ = true;
-            cm.hasNX = true;
-            cm.hasNY = true;
-            cm.hasNZ = true;
-        }
-        return cm;
-    }
-    
-    @Override
-    public IPixelFormat getPixelFormat() {
-        return header.getPixelFormat();
-    }
-    //</editor-fold>
     
     @Override
     public byte[] compilePatch(ITexture src) {
@@ -229,5 +185,54 @@ public class MTTexture extends ITexture {
                 }
             }
         }
+    }
+    
+    @Override
+    public int getWidth() {
+        return header.width;
+    }
+    
+    @Override
+    public int getHeight() {
+        return header.height;
+    }
+    
+    @Override
+    public int getFaceCount() {
+        return header.faceCount;
+    }
+    
+    @Override
+    public int getMipCount() {
+        return header.mipCount;
+    }
+    
+    @Override
+    public int getUWrap() {
+        return GL20.GL_REPEAT;
+    }
+
+    @Override
+    public int getVWrap() {
+        return GL20.GL_REPEAT;
+    }
+    
+    @Override
+    public ICubeMapHeader getCubeMapHeader() {
+        ICubeMapHeader cm = new ICubeMapHeader();
+        if (header.isCubeMap()) {
+            cm.hasPX = true;
+            cm.hasPY = true;
+            cm.hasPZ = true;
+            cm.hasNX = true;
+            cm.hasNY = true;
+            cm.hasNZ = true;
+        }
+        return cm;
+    }
+    
+    @Override
+    public IPixelFormat getPixelFormat() {
+        return header.getPixelFormat();
     }
 }
