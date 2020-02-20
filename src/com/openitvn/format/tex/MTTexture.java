@@ -21,9 +21,8 @@ import com.openitvn.format.tex.v15.MTTextureHeader15;
 import com.openitvn.format.tex.v11.MTTextureHeader11;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.raster.IPixelFormat;
-import com.openitvn.unicore.raster.ICubeMapHeader;
+import com.openitvn.unicore.raster.ICubeMap;
 import com.openitvn.unicore.world.resource.ITexture;
-import com.openitvn.unicore.raster.TextureHelper;
 import com.openitvn.unicore.raster.IRaster;
 import com.openitvn.util.FileHelper;
 import com.openitvn.util.StringHelper;
@@ -92,7 +91,7 @@ public class MTTexture extends ITexture {
             imageBuffers = new byte[header.faceCount][header.mipCount][];
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++) {
-                    Dimension imageSize = TextureHelper.calcMipMapSize(header.width, header.height, j);
+                    Dimension imageSize = ITexture.computeMipMapSize(header.width, header.height, j);
                     int bufferSize = header.getPixelFormat().computeImageBufferSize(imageSize);
                     ds.position(offsets[i][j]);
                     imageBuffers[i][j] = ds.get(new byte[bufferSize]);
@@ -102,7 +101,7 @@ public class MTTexture extends ITexture {
     }
     
     @Override
-    public byte[] compilePatch(ITexture src) {
+    public byte[] compileTexture(ITexture src) {
         // change header to match source
         header.width = (short)src.getWidth();
         header.height = (short)src.getHeight();
@@ -167,9 +166,9 @@ public class MTTexture extends ITexture {
     @Override
     public void decodeImage(IRaster dst, int face, int mip) {
         if (!isAbstract) {
-            Dimension mipSize = TextureHelper.calcMipMapSize(header.width, header.height, mip);
+            Dimension mipSize = ITexture.computeMipMapSize(header.width, header.height, mip);
             ByteBuffer bb = ByteBuffer.wrap(imageBuffers[face][mip]).order(ByteOrder.LITTLE_ENDIAN);
-            TextureHelper.decodeImage(dst, mipSize, getPixelFormat(), bb);
+            getPixelFormat().decodeImage(dst, mipSize, bb);
             if (header instanceof MTTextureHeader11) {
                 // ver 1.1 have channel multipler
                 MTTextureHeader11 h = (MTTextureHeader11) header;
@@ -218,15 +217,15 @@ public class MTTexture extends ITexture {
     }
     
     @Override
-    public ICubeMapHeader getCubeMapHeader() {
-        ICubeMapHeader cm = new ICubeMapHeader();
+    public ICubeMap getCubeMapHeader() {
+        ICubeMap cm = new ICubeMap();
         if (header.isCubeMap()) {
-            cm.hasPX = true;
-            cm.hasPY = true;
-            cm.hasPZ = true;
-            cm.hasNX = true;
-            cm.hasNY = true;
-            cm.hasNZ = true;
+            cm.positiveX = true;
+            cm.positiveY = true;
+            cm.positiveZ = true;
+            cm.negativeX = true;
+            cm.negativeY = true;
+            cm.negativeZ = true;
         }
         return cm;
     }

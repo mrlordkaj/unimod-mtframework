@@ -37,7 +37,7 @@ public class MTTexturePack extends ITexturePack {
     public byte[] encode() {
         ITexture origin = textures.get(0);
         ITexture patch = patches.get(0);
-        return origin.compilePatch(patch);
+        return origin.compileTexture(patch);
     }
     
     @Override
