@@ -20,12 +20,12 @@ package com.openitvn.format.msg;
  *
  * @author Thinh Pham
  */
-public class MTChar {
+class MTChar {
     
-    public final int charCode;
-    public final String decode;
+    final int charCode;
+    final String decode;
     
-    public MTChar(int charCode, String decode) {
+    MTChar(int charCode, String decode) {
         this.charCode = charCode;
         switch (decode) {
             case "\\s":

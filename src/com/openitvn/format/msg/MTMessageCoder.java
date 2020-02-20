@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
  *
  * @author Thinh Pham
  */
-public abstract class MTMessageCoder {
+abstract class MTMessageCoder {
     
-    public static ArrayList<Integer> encodeMessage(String original) {
+    static ArrayList<Integer> encodeMessage(String original) {
         // at first, convert all control code to human-readable hex
         Pattern ctrlPattern = Pattern.compile("^.*(<[A-Z0-9]+>).*$");
         Matcher ctrlMatcher = ctrlPattern.matcher(original);
@@ -64,7 +64,7 @@ public abstract class MTMessageCoder {
         return charCodes;
     }
     
-    public static String decodeMessage(DataStream ds) {
+    static String decodeMessage(DataStream ds) {
         StringBuilder sb = new StringBuilder();
         int charCode;
         boolean lineRemain = true;
@@ -82,8 +82,8 @@ public abstract class MTMessageCoder {
         return sb.toString();
     }
     
-    public static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.chr";
-    public static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.chr";
+    static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.chr";
+    static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.chr";
     
     private static final ArrayList<MTChar> CHARACTER_MAP = new ArrayList();
     private static int unkCode = 0x00440016; // use character "?" for undefined chars
