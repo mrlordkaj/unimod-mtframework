@@ -20,10 +20,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.openitvn.format.tex.v15.MTTextureHeader15;
 import com.openitvn.format.tex.v11.MTTextureHeader11;
 import com.openitvn.unicore.data.DataStream;
-import com.openitvn.unicore.raster.IPixelFormat;
-import com.openitvn.unicore.raster.ICubeMap;
+import com.openitvn.unicore.world.resource.IPixelFormat;
+import com.openitvn.unicore.world.resource.ICubeMap;
 import com.openitvn.unicore.world.resource.ITexture;
-import com.openitvn.unicore.raster.IRaster;
+import com.openitvn.unicore.world.resource.IRaster;
 import com.openitvn.util.FileHelper;
 import com.openitvn.util.StringHelper;
 import java.awt.Dimension;
@@ -91,10 +91,11 @@ public class MTTexture extends ITexture {
             imageBuffers = new byte[header.faceCount][header.mipCount][];
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++) {
-                    Dimension imageSize = computeMipMapSize(header.width, header.height, j);
-                    int bufferSize = header.getPixelFormat().computeImageBufferSize(imageSize);
+                    Dimension mipSize = computeMipMapSize(header.width, header.height, j);
+                    int bufferSize = header.getPixelFormat().computeImageBufferSize(mipSize);
+                    imageBuffers[i][j] = new byte[bufferSize];
                     ds.position(offsets[i][j]);
-                    imageBuffers[i][j] = ds.get(new byte[bufferSize]);
+                    ds.get(imageBuffers[i][j]);
                 }
             }
         }

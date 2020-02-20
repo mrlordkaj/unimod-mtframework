@@ -17,7 +17,7 @@
 package com.openitvn.format.tex.v15;
 
 import com.openitvn.unicore.data.DataStream;
-import com.openitvn.unicore.raster.IPixelFormat;
+import com.openitvn.unicore.world.resource.IPixelFormat;
 import com.openitvn.format.tex.MTTextureHeader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

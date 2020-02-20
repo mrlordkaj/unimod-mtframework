@@ -16,7 +16,7 @@
  */
 package com.openitvn.format.tex;
 
-import com.openitvn.unicore.raster.IPixelFormat;
+import com.openitvn.unicore.world.resource.IPixelFormat;
 
 /**
  *
