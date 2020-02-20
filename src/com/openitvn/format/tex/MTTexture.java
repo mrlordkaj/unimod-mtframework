@@ -91,7 +91,7 @@ public class MTTexture extends ITexture {
             imageBuffers = new byte[header.faceCount][header.mipCount][];
             for (int i = 0; i < header.faceCount; i++) {
                 for (int j = 0; j < header.mipCount; j++) {
-                    Dimension imageSize = ITexture.computeMipMapSize(header.width, header.height, j);
+                    Dimension imageSize = computeMipMapSize(header.width, header.height, j);
                     int bufferSize = header.getPixelFormat().computeImageBufferSize(imageSize);
                     ds.position(offsets[i][j]);
                     imageBuffers[i][j] = ds.get(new byte[bufferSize]);
@@ -159,27 +159,30 @@ public class MTTexture extends ITexture {
     }
     
     @Override
-    public byte[] getImageBuffer(int imageId, int mipMapLevel) {
-        return isAbstract ? new byte[0] : imageBuffers[imageId][mipMapLevel];
+    public byte[][] getPalette() {
+        return null;
     }
     
     @Override
-    public void decodeImage(IRaster dst, int face, int mip) {
+    public byte[] getImageBuffer(int faceId, int mipLevel) {
+        return isAbstract ? new byte[0] : imageBuffers[faceId][mipLevel];
+    }
+    
+    @Override
+    public void decodeImage(IRaster dstImg, int faceId, int mipLevel) {
         if (!isAbstract) {
-            Dimension mipSize = ITexture.computeMipMapSize(header.width, header.height, mip);
-            ByteBuffer bb = ByteBuffer.wrap(imageBuffers[face][mip]).order(ByteOrder.LITTLE_ENDIAN);
-            getPixelFormat().decodeImage(dst, mipSize, bb);
+            super.decodeImage(dstImg, faceId, mipLevel);
             if (header instanceof MTTextureHeader11) {
                 // ver 1.1 have channel multipler
                 MTTextureHeader11 h = (MTTextureHeader11) header;
                 byte[] rgba = new byte[4];
-                for (int y = 0; y < dst.getHeight(); y++) {
-                    for (int x = 0; x < dst.getWidth(); x++) {
-                        dst.getRGBA(x, y, rgba);
+                for (int y = 0; y < dstImg.getHeight(); y++) {
+                    for (int x = 0; x < dstImg.getWidth(); x++) {
+                        dstImg.getRGBA(x, y, rgba);
                         rgba[0] = (byte)((rgba[0] & 0xff) * h.preR);
                         rgba[1] = (byte)((rgba[1] & 0xff) * h.preG);
                         rgba[2] = (byte)((rgba[2] & 0xff) * h.preB);
-                        dst.setRGBA(x, y, rgba);
+                        dstImg.setRGBA(x, y, rgba);
                     }
                 }
             }
