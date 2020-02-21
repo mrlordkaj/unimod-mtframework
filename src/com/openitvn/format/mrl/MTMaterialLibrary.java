@@ -21,7 +21,7 @@ import com.openitvn.format.mod.DependencyHelper;
 import com.openitvn.format.tex.MTTexture;
 import com.openitvn.maintain.DumpEntry;
 import com.openitvn.unicore.world.resource.IMaterialPack;
-import com.openitvn.util.StringHelper;
+import com.openitvn.helper.StringHelper;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;

@@ -19,7 +19,7 @@ package com.openitvn.format.msg;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.message.IMessage;
 import com.openitvn.unicore.message.IMessageEntry;
-import com.openitvn.util.StringHelper;
+import com.openitvn.helper.StringHelper;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;

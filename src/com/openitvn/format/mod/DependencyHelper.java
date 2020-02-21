@@ -18,7 +18,7 @@ package com.openitvn.format.mod;
 
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.format.tex.MTTexture;
-import com.openitvn.util.FileHelper;
+import com.openitvn.helper.FileHelper;
 import com.openitvn.maintain.Logger;
 import java.io.IOException;
 

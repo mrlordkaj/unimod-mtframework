@@ -24,14 +24,14 @@ import com.openitvn.unicore.world.ISkeleton;
 import com.openitvn.format.mod.MTBone;
 import com.openitvn.format.mod.MTBoundingBox;
 import com.openitvn.format.mod.MTBoundingSphere;
-import com.openitvn.format.mod.MTMod;
-import com.openitvn.format.mod.MTModReader;
+import com.openitvn.format.mod.MTModel;
+import com.openitvn.format.mod.MTModelReader;
 import com.openitvn.format.mrl.MTMaterialHash;
 import com.openitvn.format.mrl.MTMaterialLibrary;
 import com.openitvn.maintain.Logger;
 import com.openitvn.unicore.data.DataFormat;
 import com.openitvn.unicore.world.resource.IModel;
-import com.openitvn.util.FileHelper;
+import com.openitvn.helper.FileHelper;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -39,7 +39,7 @@ import java.util.HashMap;
  *
  * @author Thinh Pham
  */
-public class MTModReader21 extends MTModReader {
+public class MTModelReader21 extends MTModelReader {
     
     // structure
     private short numBones, numMeshes, numMaterials;
@@ -54,12 +54,12 @@ public class MTModReader21 extends MTModReader {
     private int unk2, unk3, unk4, unk5, unk6;
     private byte[] unk7;
     
-    public MTModReader21(short ver, short rev) {
+    public MTModelReader21(short ver, short rev) {
         super(ver, rev);
     }
     
     @Override
-    protected void decode(MTMod world, DataStream ds) {
+    protected void decode(MTModel world, DataStream ds) {
         // read materials from mrl file
         requestMRL(ds);
         

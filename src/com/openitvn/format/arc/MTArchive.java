@@ -20,7 +20,7 @@ import com.openitvn.unicore.archive.IArchive;
 import com.openitvn.unicore.archive.ICompression;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.data.FileStream;
-import com.openitvn.util.StringHelper;
+import com.openitvn.helper.StringHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

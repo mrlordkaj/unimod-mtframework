@@ -24,8 +24,8 @@ import com.openitvn.format.mod.DependencyHelper;
 import com.openitvn.format.mod.MTBoundingBox;
 import com.openitvn.format.mod.MTBoundingSphere;
 import com.openitvn.format.mod.MTBone;
-import com.openitvn.format.mod.MTMod;
-import com.openitvn.format.mod.MTModReader;
+import com.openitvn.format.mod.MTModel;
+import com.openitvn.format.mod.MTModelReader;
 import com.openitvn.format.tex.MTTexture;
 import com.openitvn.unicore.world.resource.IModel;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import java.util.HashMap;
  *
  * @author Thinh Pham
  */
-public class MTModReader15 extends MTModReader {
+public class MTModelReader15 extends MTModelReader {
     
     // structure
     private short numBones, numMeshes, numMaterials;
@@ -50,12 +50,12 @@ public class MTModReader15 extends MTModReader {
     private int reserved3;
     private byte[] unk12;
     
-    public MTModReader15(short ver, short rev) {
+    public MTModelReader15(short ver, short rev) {
         super(ver, rev);
     }
     
     @Override
-    protected void decode(MTMod world, DataStream ds) {
+    protected void decode(MTModel world, DataStream ds) {
         world.maxBones = 32; // each map have 32 bones
         numBones = ds.getShort();
         numMeshes = ds.getShort();

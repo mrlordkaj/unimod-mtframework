@@ -25,7 +25,7 @@ import java.util.ArrayList;
  *
  * @author Thinh Pham
  */
-public abstract class MTModReader {
+public abstract class MTModelReader {
     
     // order is matter (used as id), so we must use ArrayList collection here
     protected final ArrayList<IMaterial> materials = new ArrayList();
@@ -34,14 +34,14 @@ public abstract class MTModReader {
     protected final short version, revision;
     protected MTGroup[] groups;
     
-    public MTModReader(short ver, short rev) {
+    public MTModelReader(short ver, short rev) {
         this.version = ver;
         this.revision = rev;
     }
     
-    protected abstract void decode(MTMod world, DataStream ds) throws UnsupportedOperationException;
+    protected abstract void decode(MTModel world, DataStream ds) throws UnsupportedOperationException;
     
-    protected void readGroup(MTMod world, DataStream ds, int numGroups) {
+    protected void readGroup(MTModel world, DataStream ds, int numGroups) {
         groups = new MTGroup[numGroups];
         for (int i = 0; i < numGroups; i++) {
             MTGroup group = groups[i] = new MTGroup(ds);

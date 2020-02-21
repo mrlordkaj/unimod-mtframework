@@ -19,11 +19,11 @@ package com.openitvn.format.mod;
 import com.openitvn.unicore.data.DataStream;
 import com.openitvn.unicore.world.IWorldUnit;
 import com.openitvn.unicore.world.IWorld;
-import com.openitvn.format.mod.v15.MTModReader15;
-import com.openitvn.format.mod.v21.MTModReader21;
+import com.openitvn.format.mod.v15.MTModelReader15;
+import com.openitvn.format.mod.v21.MTModelReader21;
 import com.openitvn.format.mrl.MTMaterialHash;
 import com.openitvn.unicore.world.ILayer;
-import com.openitvn.util.StringHelper;
+import com.openitvn.helper.StringHelper;
 import com.openitvn.unicore.world.IWorldCoord;
 import com.openitvn.unicore.world.resource.IModel;
 
@@ -31,7 +31,7 @@ import com.openitvn.unicore.world.resource.IModel;
  *
  * @author Thinh Pham
  */
-public class MTMod extends IWorld {
+public class MTModel extends IWorld {
     
     private static final int MAGIC_MOD = StringHelper.makeFourCC("MOD\0");
     
@@ -40,7 +40,7 @@ public class MTMod extends IWorld {
                             // 211: RE6
     private short revision; // ubyte
     
-    public MTMod() {
+    public MTModel() {
         setCoordinate(IWorldCoord.Yup, IWorldUnit.Centimeters);
     }
     
@@ -49,15 +49,15 @@ public class MTMod extends IWorld {
         if (ds.getInt() == MAGIC_MOD) {
             version = ds.getUByte(); 
             revision = ds.getUByte();
-            MTModReader reader;
+            MTModelReader reader;
             switch (version) {
                 case 156:
-                    reader = new MTModReader15(version, revision);
+                    reader = new MTModelReader15(version, revision);
                     break;
 
                 case 210:
                 case 211:
-                    reader = new MTModReader21(version, revision);
+                    reader = new MTModelReader21(version, revision);
                     break;
 
                 default:

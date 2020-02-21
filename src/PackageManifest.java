@@ -17,7 +17,7 @@
 
 
 import com.openitvn.format.arc.MTArchive;
-import com.openitvn.format.mod.MTMod;
+import com.openitvn.format.mod.MTModel;
 import com.openitvn.format.mrl.MTMaterialLibrary;
 import com.openitvn.format.msg.MTMessage;
 import com.openitvn.format.tex.MTTexturePack;
@@ -34,12 +34,11 @@ public final class PackageManifest extends PluginManifest {
     
     public PackageManifest() {
         // TODO: define your supported file extensions here
-        putFileView("MTF Archive", FileType.Archive,   MTArchive.class,            "arc");
-        putFileView("MTF Texture", FileType.Texture,   MTTexturePack.class,        "tex", "rtex");
-        putFileView("MTF Model", FileType.World,     MTMod.class,                "mod");
-//        putFileView("MTF Message", FileType.Custom,    MessageEditor.class,        "msg", "msg2");
-        putFileView("MTF Message", FileType.Message,   MTMessage.class,        "msg", "msg2");
-        putFileView("MTF Material", FileType.Material,  MTMaterialLibrary.class,    "mrl");
+        putFileView("MTF Archive", FileType.Archive, MTArchive.class, "arc");
+        putFileView("MTF Texture", FileType.Texture, MTTexturePack.class, "tex", "rtex");
+        putFileView("MTF Model", FileType.World, MTModel.class, "mod");
+        putFileView("MTF Message", FileType.Message, MTMessage.class, "msg", "msg2");
+        putFileView("MTF Material", FileType.Material, MTMaterialLibrary.class, "mrl");
         
         // TODO: define your custom control panel here
         putControlPanel("Test", PanelLocation.Sidebar, TestPanel.class, true);
