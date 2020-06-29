@@ -83,7 +83,7 @@ abstract class MTMessageCoder {
     }
     
     static final String INTERNAL_CHARMAP = "/com/openitvn/format/msg/charmap.chr";
-    static final String EXTERNAL_CHARMAP = Unicore.workDir + "/MTFramework/charmap.chr";
+    static final String EXTERNAL_CHARMAP = Unicore.getWorkDir("/MTFramework/charmap.chr");
     
     private static final ArrayList<MTChar> CHARACTER_MAP = new ArrayList();
     private static int unkCode = 0x00440016; // use character "?" for undefined chars

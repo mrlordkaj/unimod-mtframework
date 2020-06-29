@@ -232,11 +232,12 @@ public class FontInspect extends javax.swing.JFrame {
     }//GEN-LAST:event_imagePanelMouseClicked
     
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(() -> {
-            try {
-                new FontInspect().setVisible(true);
-            } catch (IOException ex) {
-                
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    new FontInspect().setVisible(true);
+                } catch (IOException ex) { }
             }
         });
     }

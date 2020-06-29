@@ -27,6 +27,7 @@ import com.openitvn.format.mod.MTBone;
 import com.openitvn.format.mod.MTModel;
 import com.openitvn.format.mod.MTModelReader;
 import com.openitvn.format.tex.MTTexture;
+import com.openitvn.unicore.world.INode;
 import com.openitvn.unicore.world.resource.IModel;
 import java.util.HashMap;
 
@@ -94,8 +95,6 @@ public class MTModelReader15 extends MTModelReader {
         unk12 = (unk8 != 0) ? new byte[boneBufferOffset - 176] : new byte[0];
         ds.get(unk12);
         
-        Vector3 scale = new Vector3(box.max).sub(box.min);
-        
         // read bones
         ISkeleton skel = null;
         if (numBones > 0) {
@@ -105,10 +104,8 @@ public class MTModelReader15 extends MTModelReader {
             ds.position(boneBufferOffset);
             for (int i = 0; i < numBones; i++) {
                 MTBone b = bones[i] = new MTBone(i, ds);
-                if (b.parentId == 255)
-                    b.attach(skel);
-                else
-                    b.attach(bones[b.parentId]);
+                INode p = (b.parentId == 255) ? skel : bones[b.parentId];
+                b.attach(p);
             }
             for (MTBone b : bones) {
                 b.readLocalTransform(ds);
@@ -129,8 +126,9 @@ public class MTModelReader15 extends MTModelReader {
                 ds.position(boneMapOffset + i * 36);
                 int numLocalBones = ds.getInt();
                 skel.boneMap[i] = new short[numLocalBones];
-                for (int j = 0; j < numLocalBones; j++)
+                for (int j = 0; j < numLocalBones; j++) {
                     skel.boneMap[i][j] = ds.getUByte();
+                }
             }
         }
         
@@ -159,7 +157,7 @@ public class MTModelReader15 extends MTModelReader {
         for (int i = 0; i < numMeshes; i++) {
             MTMesh15 mesh = meshes[i] = new MTMesh15(ds);
             short lod = mesh.levelOfDetail;
-            String modName = String.format("Part_%03d_LOD_%03d", mesh.groupIndex, lod);
+            String modName = String.format("Mesh_%03d_LOD_%03d", mesh.groupIndex, lod);
             IModel mod = modelMap.get(modName);
             if (mod == null) {
                 // add new model when not found
@@ -178,10 +176,19 @@ public class MTModelReader15 extends MTModelReader {
             }
         }
         
+        Vector3 translate, scale;
+        if (numBones > 0) {
+            translate = box.min;
+            scale = new Vector3(box.max).sub(box.min);
+        } else {
+            translate = Vector3.Zero;
+            scale = new Vector3(1, 1, 1);
+        }
+        
         // read meshes vertex buffer
         for (MTMesh15 mesh : meshes) {
             ds.position(vertexBufferOffset);
-            mesh.readVertexBuffer(ds, box.min, scale);
+            mesh.readVertexBuffer(ds, translate, scale);
             ds.position(indexBufferOffset);
             mesh.readIndexBuffer(ds);
         }

@@ -35,9 +35,8 @@ import java.nio.ByteOrder;
  * @author Thinh Pham
  */
 public class MTTexture extends ITexture {
-    
-    public static final int MAGIC_TEX  = StringHelper.makeFourCC('T','E','X','\0');
-    public static final int MAGIC_RTEX = StringHelper.makeFourCC('R','T','X','\0');
+    private static final int MAGIC_TEX  = StringHelper.makeFourCC("TEX\0");
+    private static final int MAGIC_RTX = StringHelper.makeFourCC("RTX\0");
     
     private final boolean isAbstract;
     private short version, revision;
@@ -49,10 +48,11 @@ public class MTTexture extends ITexture {
         super(FileHelper.getFileName(ds.getLastPath()));
         
         int magic = ds.getInt();
-        if (magic != MAGIC_TEX && magic != MAGIC_RTEX)
+        if (magic != MAGIC_TEX && magic != MAGIC_RTX) {
             throw new UnsupportedOperationException("Invalid MTF Texture");
+        }
         
-        isAbstract = (magic == MAGIC_RTEX);
+        isAbstract = (magic == MAGIC_RTX);
         version = ds.getUByte();
         revision = ds.getUByte();
         switch (version) {
@@ -136,7 +136,7 @@ public class MTTexture extends ITexture {
         }
         ByteBuffer data = ByteBuffer.allocate(fileSize).order(ByteOrder.LITTLE_ENDIAN);
         // write header
-        data.putInt(isAbstract ? MAGIC_RTEX : MAGIC_TEX);
+        data.putInt(isAbstract ? MAGIC_RTX : MAGIC_TEX);
         data.putShort(version);
         data.put(headerData);
         if (!isAbstract) {

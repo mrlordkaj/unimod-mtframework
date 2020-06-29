@@ -52,7 +52,6 @@ class MTMesh15 extends IMesh {
     final byte unk6;
     final short indexStart2;
     final byte vertexGroupCount; // weightMapCount????
-//    final byte boneMapIndex;
     final int minIndex; // ushort
     final int maxIndex; // ushort
     final short unk7;
@@ -113,7 +112,7 @@ class MTMesh15 extends IMesh {
                 break;
 
             case 1: case 2: case 3: case 4: // 32
-                for(int i = 0; i < vertices.length; i++) {
+                for (int i = 0; i < vertices.length; i++) {
                     float[] b0 = DataFormat.D3DDECLTYPE_SHORT4N.read(ds);     // posX posY posZ posW
                     float[] b1 = DataFormat.D3DDECLTYPE_UBYTE4.read(ds);      // bone0 bone1 bone2 bone3
                     float[] b2 = DataFormat.D3DDECLTYPE_UBYTE4N.read(ds);     // weight0 weight1 weight2 weight3
@@ -135,7 +134,7 @@ class MTMesh15 extends IMesh {
                 break;
 
             case 5: case 6: case 7: case 8: // 32
-                for(int i = 0; i < vertices.length; i++) {
+                for (int i = 0; i < vertices.length; i++) {
                     float[] b0 = DataFormat.D3DDECLTYPE_SHORT4N.read(ds);     // posX posY posZ posW (8)
                     float[] b1 = DataFormat.D3DDECLTYPE_UBYTE4.read(ds);      // bone0 bone1 bone2 bone3 (4)
                     float[] b2 = DataFormat.D3DDECLTYPE_UBYTE4.read(ds);      // bone4 bone5 bone6 bone7 (4)
@@ -167,20 +166,19 @@ class MTMesh15 extends IMesh {
     }
     
     void readIndexBuffer(DataStream ds) {
-        try {
+//        try {
             int indexDataOffset = indexPosition * 2 + indexOffset * 2;
             int indexStart = Math.max(indexStart1, indexStart2);
             ds.position(ds.position() + indexDataOffset);
             short[] strips = new short[indexCount];
-            for (int i = 0; i < indexCount; i++)
+            for (int i = 0; i < indexCount; i++) {
                 strips[i] = (short)(ds.getShort() - indexStart);
+            }
             // convert tri-strip to tri-list
             setIndices(WorldHelper.triangleStrip2TriangleList(strips));
-        } catch (IndexOutOfBoundsException ex) {
-            // TODO: avoid bug in uOm1303_Truck.arc
-//            Logger.printError("Error while reading %1$s", getName());
-            setIndices(new short[0]);
-        }
+//        } catch (IndexOutOfBoundsException ex) {
+//            ex.printStackTrace(System.err);
+//        }
     }
     
     private int getVertexCount() {
