@@ -29,7 +29,7 @@ public class MTArchiveEntry extends IArchiveEntry {
     private final byte flags;
     
     public MTArchiveEntry(MTArchive arc, String path, int hash, int packed, int size, byte flags, int offset) {
-        super(arc, path+"."+MTArchiveExtension.getString(hash), size, offset, packed);
+        super(arc, path+"."+MTArchiveExt.getString(hash), size, offset, packed);
         this.realPath = path;
         this.hash = hash;
         this.flags = flags;

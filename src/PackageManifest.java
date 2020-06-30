@@ -24,7 +24,7 @@ import com.openitvn.format.tex.MTTexturePack;
 import com.openitvn.unicore.plugin.FileType;
 import com.openitvn.unicore.plugin.PanelLocation;
 import com.openitvn.unicore.plugin.PluginManifest;
-import com.unimod.plugin.panel.TestPanel;
+import net.unimod.mtframework.REStage;
 
 /**
  *
@@ -41,13 +41,13 @@ public final class PackageManifest extends PluginManifest {
         putFileView("MTF Material", FileType.Material, MTMaterialLibrary.class, "mrl");
         
         // TODO: define your custom control panel here
-        putControlPanel("Test", PanelLocation.Sidebar, TestPanel.class, true);
+        putControlPanel("RE Stage", PanelLocation.Sidebar, REStage.class, true);
     }
 
     @Override
     public String getId() {
         // TODO: define package identity here
-        return "com.unimod.mtframework";
+        return "net.unimod.mtframework";
     }
 
     @Override
