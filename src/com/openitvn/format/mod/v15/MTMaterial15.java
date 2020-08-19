@@ -35,7 +35,7 @@ public class MTMaterial15 extends IMaterial {
     private static final int FLAG_UNKNOW_03      = 0b0000000000001000;
     private static final int FLAG_UNKNOW_04      = 0b0000000000010000;
     private static final int FLAG_UNKNOW_05      = 0b0000000000100000;
-    private static final int FLAG_IS_OPAQUE      = 0b0000000001000000; // or FLAG_BACKFACE_CULL? or FLAG_RENDERABLE? it always equals not FLAG_IS_ABSTRACT?
+    private static final int FLAG_IS_OPAQUE      = 0b0000000001000000; // or FLAG_BACKFACE_CULL? or FLAG_RENDERABLE? is it always !FLAG_IS_ABSTRACT?
     private static final int FLAG_UNKNOW_07      = 0b0000000010000000;
     private static final int FLAG_HAS_ALPHA      = 0b0000000100000000;
     private static final int FLAG_UNKNOW_09      = 0b0000001000000000;
@@ -164,13 +164,21 @@ public class MTMaterial15 extends IMaterial {
         unk47 = ds.getFloat();
         unk48 = ds.getFloat();
         // set generic attribute
-        if (ambientIndex > 0 && textures.get(ambientIndex - 1) != null)
-            ambientTexture = textures.get(ambientIndex - 1).getName();
-        if (diffuseIndex > 0 && textures.get(diffuseIndex - 1) != null)
-            diffuseTexture = textures.get(diffuseIndex - 1).getName();
-        if (normalIndex  > 0 && textures.get(normalIndex  - 1) != null)
-            normalTexture = textures.get(normalIndex  - 1).getName();
-        alphaBlend = (flags1 & FLAG_HAS_ALPHA) != 0;
+        int maxId = textures.size() + 1;
+        if (ambientIndex > 0 && ambientIndex < maxId) {
+            ITexture tex = textures.get(ambientIndex - 1);
+            ambientTexture = tex.getName();
+        }
+        if (diffuseIndex > 0 && diffuseIndex < maxId) {
+            ITexture tex = textures.get(diffuseIndex - 1);
+            diffuseTexture = tex.getName();
+        }
+        if (normalIndex  > 0 && normalIndex < maxId) {
+            ITexture tex = textures.get(normalIndex  - 1);
+            normalTexture = tex.getName();
+        }
+//        alphaBlend = (flags1 & FLAG_HAS_ALPHA) != 0;
+        alphaBlend = (flags1 & FLAG_IS_OPAQUE) == 0;
     }
     
     public boolean isRenderable() {

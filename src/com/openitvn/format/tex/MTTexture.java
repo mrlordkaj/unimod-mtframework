@@ -20,7 +20,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.openitvn.format.tex.v15.MTTextureHeader15;
 import com.openitvn.format.tex.v11.MTTextureHeader11;
 import com.openitvn.unicore.data.DataStream;
-import com.openitvn.unicore.world.resource.IPixelFormat;
 import com.openitvn.unicore.world.resource.ICubeMap;
 import com.openitvn.unicore.world.resource.ITexture;
 import com.openitvn.unicore.world.resource.IRaster;
@@ -35,6 +34,7 @@ import java.nio.ByteOrder;
  * @author Thinh Pham
  */
 public class MTTexture extends ITexture {
+    
     private static final int MAGIC_TEX  = StringHelper.makeFourCC("TEX\0");
     private static final int MAGIC_RTX = StringHelper.makeFourCC("RTX\0");
     
@@ -42,7 +42,6 @@ public class MTTexture extends ITexture {
     private short version, revision;
     private MTTextureHeader header;
     private byte[][] cubeMapBuffer;
-    private byte[][][] imageBuffers;
     
     public MTTexture(DataStream ds) {
         super(FileHelper.getFileName(ds.getLastPath()));
@@ -60,6 +59,7 @@ public class MTTexture extends ITexture {
                 header = new MTTextureHeader11(ds);
                 break;
                 
+            case 153: // DDDA
             case 154: // RE6
             case 155: // RE6
             case 156: // RE6
@@ -72,25 +72,43 @@ public class MTTexture extends ITexture {
                 throw new UnsupportedOperationException("Unsupported MTF Texture v" + version);
         }
         
+        width = header.width;
+        height = header.height;
+        numFaces = header.faceCount;
+        numMips = header.mipCount;
+        uwrap = GL20.GL_REPEAT;
+        vwrap = GL20.GL_REPEAT;
+        format = header.getPixelFormat();
+        // generate cubemap info
+        cubeMap = new ICubeMap();
+        if (header.isCubeMap()) {
+            cubeMap.positiveX = true;
+            cubeMap.positiveY = true;
+            cubeMap.positiveZ = true;
+            cubeMap.negativeX = true;
+            cubeMap.negativeY = true;
+            cubeMap.negativeZ = true;
+        }
+        
         if (!isAbstract) {
             // copy cubemap data, 18 bytes per face
             if (header.isCubeMap()) {
-                cubeMapBuffer = new byte[header.faceCount][];
+                cubeMapBuffer = new byte[numFaces][];
                 for (int i = 0; i < cubeMapBuffer.length; i++) {
                     cubeMapBuffer[i] = ds.get(new byte[18]);
                 }
             }
             // read image buffer offsets
-            int[][] offsets = new int[header.faceCount][header.mipCount];
-            for (int i = 0; i < header.faceCount; i++) {
-                for (int j = 0; j < header.mipCount; j++) {
+            int[][] offsets = new int[numFaces][numMips];
+            for (int i = 0; i < numFaces; i++) {
+                for (int j = 0; j < numMips; j++) {
                     offsets[i][j] = ds.getInt();
                 }
             }
             // copy imageBuffer from offset values above
-            imageBuffers = new byte[header.faceCount][header.mipCount][];
-            for (int i = 0; i < header.faceCount; i++) {
-                for (int j = 0; j < header.mipCount; j++) {
+            imageBuffers = new byte[numFaces][numMips][];
+            for (int i = 0; i < numFaces; i++) {
+                for (int j = 0; j < numMips; j++) {
                     Dimension mipSize = computeMipMapSize(header.width, header.height, j);
                     int bufferSize = header.getPixelFormat().computeImageBufferSize(mipSize);
                     imageBuffers[i][j] = new byte[bufferSize];
@@ -160,16 +178,6 @@ public class MTTexture extends ITexture {
     }
     
     @Override
-    public byte[][] getPalette() {
-        return null;
-    }
-    
-    @Override
-    public byte[] getImageBuffer(int faceId, int mipLevel) {
-        return isAbstract ? new byte[0] : imageBuffers[faceId][mipLevel];
-    }
-    
-    @Override
     public void decodeImage(IRaster dstImg, int faceId, int mipLevel) {
         if (!isAbstract) {
             super.decodeImage(dstImg, faceId, mipLevel);
@@ -188,54 +196,5 @@ public class MTTexture extends ITexture {
                 }
             }
         }
-    }
-    
-    @Override
-    public int getWidth() {
-        return header.width;
-    }
-    
-    @Override
-    public int getHeight() {
-        return header.height;
-    }
-    
-    @Override
-    public int getFaceCount() {
-        return header.faceCount;
-    }
-    
-    @Override
-    public int getMipCount() {
-        return header.mipCount;
-    }
-    
-    @Override
-    public int getUWrap() {
-        return GL20.GL_REPEAT;
-    }
-
-    @Override
-    public int getVWrap() {
-        return GL20.GL_REPEAT;
-    }
-    
-    @Override
-    public ICubeMap getCubeMapHeader() {
-        ICubeMap cm = new ICubeMap();
-        if (header.isCubeMap()) {
-            cm.positiveX = true;
-            cm.positiveY = true;
-            cm.positiveZ = true;
-            cm.negativeX = true;
-            cm.negativeY = true;
-            cm.negativeZ = true;
-        }
-        return cm;
-    }
-    
-    @Override
-    public IPixelFormat getPixelFormat() {
-        return header.getPixelFormat();
     }
 }
